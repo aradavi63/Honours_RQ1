@@ -1,0 +1,18 @@
+[submodule "repos/server-initiated_HE_FL"]
+	path = repos/server-initiated_HE_FL
+	url = https://github.com/aradavi63/server-initiated_HE_FL.git
+[submodule "repos/FedSHE"]
+	path = repos/FedSHE
+	url = https://github.com/aradavi63/FedSHE.git
+[submodule "repos/FedAvg"]
+	path = repos/FedAvg
+	url = https://github.com/aradavi63/FedAvg.git
+[submodule "repos/GIA"]
+	path = repos/GIA
+	url = https://github.com/aradavi63/GIA.git
+[submodule "repos/DataPoisoning_FL"]
+	path = repos/DataPoisoning_FL
+	url = https://github.com/aradavi63/DataPoisoning_FL.git
+[submodule "repos/FedMIA"]
+	path = repos/FedMIA
+	url = https://github.com/aradavi63/FedMIA.git
