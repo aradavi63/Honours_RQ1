@@ -1,0 +1,19 @@
+name: cits-fedshe
+channels:
+  - pytorch
+  - conda-forge
+  - defaults
+dependencies:
+  - python=3.9
+  - pip<25
+  - setuptools<70
+  - wheel
+  - cython=0.29.37
+  - numpy=1.21.0
+  - pip:
+      - matplotlib==3.5.3
+      - phe==1.5.0
+      - tenseal==0.3.4
+      - termcolor==1.1.0
+      - torch==1.13.1
+      - torchvision==0.14.1

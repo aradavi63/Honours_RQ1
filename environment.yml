@@ -1,0 +1,25 @@
+name: honours-rq1
+channels:
+  - conda-forge
+  - pytorch
+  - defaults
+dependencies:
+  - python=3.9
+  - pip
+  - cmake
+  - ninja
+  - cython=0.29
+  - numpy=1.21
+  - matplotlib=3.5
+  - pandas
+  - scikit-learn
+  - pyyaml
+  - tqdm
+  - pytorch=1.13
+  - torchvision=0.14
+  - cpuonly
+  - pip:
+      - phe==1.5.0
+      - tenseal==0.3.4
+      - termcolor==1.1.0
+      - Pyfhel==3.4.2
