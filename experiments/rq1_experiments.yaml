@@ -1,0 +1,123 @@
+# RQ1 controlled experiment registry.
+#
+# This file is a planned matrix, not a record of inherited results.
+# Update status and metrics only after runs have been executed inside this repo.
+
+study:
+  id: rq1_fl_security_comparison
+  title: "Controlled comparison of FL privacy/aggregation mechanisms under attacks"
+  dataset: MNIST
+  model: cnn
+  num_users: 10
+  num_samples_per_user: 100
+  non_iid_alpha: 1.0
+  local_epochs: 1
+  global_rounds: 20
+  seeds: [1, 2, 3]
+  device: cpu
+  lee_he_partition_size: 5
+  poison_source_label: 1
+  poison_target_label: 7
+  poison_malicious_clients: [1, 2]
+
+common_paths:
+  project_root: "."
+  python: "python"
+  lee_repo: "repos/server-initiated_HE_FL"
+  fedshe_repo: "repos/FedSHE"
+  fedavg_repo: "repos/FedAvg"
+  gradient_attack_repo: "repos/GIA"
+  poisoning_attack_repo: "repos/DataPoisoning_FL"
+  membership_attack_repo: "repos/FedMIA"
+  master_results: "results/master_results.csv"
+  gradient_inversion_summary: "results/gradient_inversion_summary.csv"
+  membership_inference_summary: "results/membership_inference_summary.csv"
+  poisoning_summary: "results/poisoning_summary.csv"
+
+mechanisms:
+  fedavg:
+    status: pending
+    role: "Plain FedAvg baseline"
+    environment: "environments/lee-he.yml"
+    training_script: "scripts/run_lee_headless.py"
+    notes: "Uses the server-initiated_HE_FL repo's FedAvg path for closest comparison with Lee HE."
+
+  lee_he:
+    status: pending
+    role: "Main point of comparison"
+    environment: "environments/lee-he.yml"
+    training_script: "scripts/run_lee_headless.py"
+    notes: "Evaluate objectively against the same utility, inference, inversion, and poisoning metrics."
+
+  fedshe_plain:
+    status: pending
+    role: "FedSHE plaintext/control mechanism"
+    environment: "environments/fedshe-plain-windows.yml"
+    training_script: "scripts/run_fedshe_headless.py"
+    notes: "Runnable control path; not a substitute for full CKKS privacy evaluation."
+
+  fedshe_ckks:
+    status: blocked
+    role: "FedSHE CKKS encrypted mechanism"
+    environment: "environment.yml"
+    training_script: "scripts/run_fedshe_headless.py"
+    notes: "Run under Linux/WSL once Pyfhel installs successfully."
+
+experiments:
+  utility_efficiency:
+    status: pending
+    seeds: [1, 2, 3]
+    mechanisms: [fedavg, lee_he, fedshe_plain, fedshe_ckks]
+    metrics:
+      - final_accuracy
+      - final_loss
+      - total_time
+      - epoch_time
+      - key_generation_time
+      - encryption_time
+      - decryption_time
+      - aggregation_time
+      - total_transmissions
+
+  gradient_inversion:
+    status: pending
+    mechanisms: [fedavg, lee_he, fedshe_plain, fedshe_ckks]
+    tests:
+      - single_client_single_sample
+      - aggregate_2_samples
+      - aggregate_5_samples
+      - encrypted_update_applicability
+    metrics:
+      - best_image_mse
+      - final_gradient_loss
+      - quality_label
+      - applicability
+      - threat_model
+
+  membership_inference:
+    status: pending
+    seeds: [1, 2, 3]
+    mechanisms: [fedavg, lee_he, fedshe_plain, fedshe_ckks]
+    member_samples: 500
+    nonmember_samples: 500
+    metrics:
+      - loss_auc
+      - loss_effective_auc
+      - loss_threshold_accuracy
+      - confidence_auc
+      - confidence_threshold_accuracy
+
+  poisoning:
+    status: pending
+    seeds: [1, 2, 3]
+    mechanisms: [fedavg, lee_he, fedshe_plain, fedshe_ckks]
+    attack:
+      type: targeted_label_flip
+      source_label: 1
+      target_label: 7
+      malicious_clients: [1, 2]
+    metrics:
+      - final_accuracy
+      - source_class_accuracy
+      - targeted_attack_success_rate
+      - non_target_to_target_rate
