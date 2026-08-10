@@ -1,0 +1,6 @@
+backend,dataset,seed,round,clients,samples_per_client,partition_manifest,mean_client_loss,test_loss,test_accuracy,round_seconds,max_absolute_error,mean_absolute_error,relative_l2_error,cosine_similarity
+plaintext,mnist,3,1,5,100,results\partitions\mnist_iid_clients-5_samples-100_seed-3.json,2.3040516519546506,2.182668386077881,0.3731,8.071253299999999,0.0,0.0,0.0,1.0000000000000002
+plaintext,mnist,3,2,5,100,results\partitions\mnist_iid_clients-5_samples-100_seed-3.json,2.1317537651062013,1.9774250019073487,0.4684,6.7816071,0.0,0.0,0.0,1.0000000000000002
+plaintext,mnist,3,3,5,100,results\partitions\mnist_iid_clients-5_samples-100_seed-3.json,1.8511235113143918,1.5530679050445557,0.6601,6.7428396,0.0,0.0,0.0,1.0
+plaintext,mnist,3,4,5,100,results\partitions\mnist_iid_clients-5_samples-100_seed-3.json,1.4218623704910276,1.1524353205680846,0.6584,6.403206800000003,0.0,0.0,0.0,1.0
+plaintext,mnist,3,5,5,100,results\partitions\mnist_iid_clients-5_samples-100_seed-3.json,1.0873755457401275,1.1532337527275085,0.6323,6.7265114,0.0,0.0,0.0,0.9999999999999999

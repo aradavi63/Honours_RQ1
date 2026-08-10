@@ -20,6 +20,7 @@ dependencies:
       # Windows stack. This wheel is compatible with torchvision 0.18.
       - pillow==10.3.0
       - datasets==4.0.0
+      - certifi==2025.8.3
       - phe==1.5.0
       - pycryptodome==3.20.0
       - tenseal==0.3.14

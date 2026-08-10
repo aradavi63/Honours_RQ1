@@ -53,7 +53,10 @@ mechanisms:
 
 experiments:
   e0_aggregation_correctness:
-    status: executable
+    status: completed
+    runner: scripts/run_e0_matrix.py
+    result_files: [results/e0/plaintext.csv, results/e0/lee_ckks.csv]
+    completed_runs: 40
     client_counts: [1, 2, 5, 10]
     seeds: [1, 2, 3, 4, 5]
     backends: [plaintext, lee_ckks]
@@ -62,8 +65,16 @@ experiments:
       min_cosine_similarity: 0.9999
     metrics: [max_absolute_error, mean_absolute_error, relative_l2_error, cosine_similarity, key_generation_seconds, encryption_seconds, aggregation_seconds, decryption_seconds, ciphertext_bytes]
   e1_utility_efficiency:
-    status: training_adapter_pending
-    mechanisms: [fedavg, lee_he, fedshe_plain, fedshe_ckks]
+    status: mnist_smoke_validated
+    runner: scripts/run_e1.py
+    implemented_mechanisms: [fedavg, lee_he]
+    pending_mechanisms: [fedshe_plain, fedshe_ckks]
+    smoke_configuration:
+      clients: 2
+      samples_per_client: 50
+      rounds: 1
+      seed: 1
+    result_files: [results/e1/mnist_plaintext_smoke.csv, results/e1/mnist_lee_ckks_smoke.csv]
     metrics: [test_accuracy, macro_f1, round_seconds, peak_memory_mb, network_bytes]
   e2_targeted_label_flipping:
     status: training_adapter_pending

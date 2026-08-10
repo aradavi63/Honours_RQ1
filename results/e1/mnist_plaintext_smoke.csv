@@ -1,0 +1,2 @@
+backend,dataset,seed,round,clients,samples_per_client,mean_client_loss,test_loss,test_accuracy,round_seconds
+plaintext,mnist,1,1,2,50,2.3326489210128782,2.2835588779449463,0.2592,10.400962699999997

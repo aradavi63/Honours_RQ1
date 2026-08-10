@@ -1,0 +1,2 @@
+backend,dataset,seed,round,clients,samples_per_client,mean_client_loss,test_loss,test_accuracy,round_seconds
+plaintext,synthetic,1,1,2,20,2.3414247274398803,2.4629326248168946,0.08,0.18186710000000073

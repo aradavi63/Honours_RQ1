@@ -1,0 +1,2 @@
+backend,dataset,seed,round,clients,samples_per_client,mean_client_loss,test_loss,test_accuracy,round_seconds,key_generation_seconds,encryption_seconds,aggregation_seconds,decryption_seconds,ciphertext_bytes
+lee_ckks,mnist,1,1,2,50,2.3326489210128782,2.2835588665008544,0.2592,7.900569299999999,0.3171292000000001,0.13019789999999887,0.0015482999999996139,0.016602999999999035,4679068

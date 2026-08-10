@@ -1,0 +1,2 @@
+backend,dataset,seed,round,clients,samples_per_client,partition_manifest,mean_client_loss,test_loss,test_accuracy,round_seconds,max_absolute_error,mean_absolute_error,relative_l2_error,cosine_similarity
+plaintext,synthetic,9,1,2,20,results\partitions\synthetic_iid_clients-2_samples-20_seed-9.json,2.3307046413421633,2.324207515716553,0.17,0.07248520000000003,0.0,0.0,0.0,1.0
