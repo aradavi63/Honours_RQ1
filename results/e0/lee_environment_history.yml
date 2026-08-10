@@ -1,0 +1,13 @@
+﻿name: rq1-lee-he
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  - psutil=6.1
+  - scikit-learn=1.4
+  - pip[version='<25']
+  - matplotlib=3.8
+  - pandas=2.2
+  - python=3.9
+  - numpy=1.26.4
+prefix: C:\Users\Adam\anaconda3\envs\rq1-lee-he

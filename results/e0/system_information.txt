@@ -1,0 +1,7 @@
+﻿Date: 2026-08-10T21:54:02.2482402+08:00
+Computer: T490S
+Operating system: Microsoft Windows NT 10.0.22631.0
+Processor count: 8
+Repository: C:\Users\Adam\GitHub\Honours_RQ1
+Parent commit: eb6a06500a6c043dc3a656a80441527d07f7fdf2
+Lee commit: 80575b5ff813fb2b4ba1a7786576ca65bf5d3303
