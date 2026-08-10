@@ -1,4 +1,4 @@
-name: cits-lee-he
+name: rq1-lee-he
 channels:
   - pytorch
   - conda-forge
@@ -6,16 +6,17 @@ channels:
 dependencies:
   - python=3.9
   - pip
+  - numpy=1.26.4
+  - pandas=2.2
+  - matplotlib=3.8
+  - scikit-learn=1.4
+  - psutil=6.1
+  - pytorch=2.3.1
+  - torchvision=0.18.1
+  - torchtext=0.18.0
+  - cpuonly
   - pip:
-      - matplotlib==3.8.4
-      - numpy==2.0.1
       - datasets==4.0.0
       - phe==1.5.0
       - pycryptodome==3.20.0
-      - scikit-learn==1.4.2
       - tenseal==0.3.14
-      - torch==2.3.1
-      - torchtext==0.18.0
-      - torchvision==0.18.1
-      - psutil==6.1.0
-      - pandas==2.2.3

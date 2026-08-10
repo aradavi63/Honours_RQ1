@@ -1,123 +1,89 @@
-# RQ1 controlled experiment registry.
-#
-# This file is a planned matrix, not a record of inherited results.
-# Update status and metrics only after runs have been executed inside this repo.
+# Executable registry for the staged RQ1 study. A pending entry is a plan, not a result.
+schema_version: 1
 
 study:
   id: rq1_fl_security_comparison
-  title: "Controlled comparison of FL privacy/aggregation mechanisms under attacks"
+  title: Controlled evaluation of Lee HE-FL under privacy and integrity attacks
   dataset: MNIST
-  model: cnn
+  confirmatory_dataset: CIFAR10
+  model: common_cnn
   num_users: 10
   num_samples_per_user: 100
   non_iid_alpha: 1.0
   local_epochs: 1
   global_rounds: 20
-  seeds: [1, 2, 3]
+  seeds: [1, 2, 3, 4, 5]
   device: cpu
-  lee_he_partition_size: 5
-  poison_source_label: 1
-  poison_target_label: 7
-  poison_malicious_clients: [1, 2]
 
 common_paths:
-  project_root: "."
-  python: "python"
-  lee_repo: "repos/server-initiated_HE_FL"
-  fedshe_repo: "repos/FedSHE"
-  fedavg_repo: "repos/FedAvg"
-  gradient_attack_repo: "repos/GIA"
-  poisoning_attack_repo: "repos/DataPoisoning_FL"
-  membership_attack_repo: "repos/FedMIA"
-  master_results: "results/master_results.csv"
-  gradient_inversion_summary: "results/gradient_inversion_summary.csv"
-  membership_inference_summary: "results/membership_inference_summary.csv"
-  poisoning_summary: "results/poisoning_summary.csv"
+  project_root: .
+  lee_repo: repos/server-initiated_HE_FL
+  fedshe_repo: repos/FedSHE
+  fedavg_repo: repos/FedAvg
+  gradient_attack_repo: repos/GIA
+  poisoning_attack_repo: repos/DataPoisoning_FL
+  membership_attack_repo: repos/FedMIA
+  results_root: results
 
 mechanisms:
   fedavg:
-    status: pending
-    role: "Plain FedAvg baseline"
-    environment: "environments/lee-he.yml"
-    training_script: "scripts/run_lee_headless.py"
-    notes: "Uses the server-initiated_HE_FL repo's FedAvg path for closest comparison with Lee HE."
-
+    status: ready_e0
+    role: Plain weighted-FedAvg correctness oracle
+    environment: environment.yml
+    runner: scripts/run_e0.py
+    backend: plaintext
   lee_he:
-    status: pending
-    role: "Main point of comparison"
-    environment: "environments/lee-he.yml"
-    training_script: "scripts/run_lee_headless.py"
-    notes: "Evaluate objectively against the same utility, inference, inversion, and poisoning metrics."
-
+    status: ready_e0
+    role: Main server-initiated CKKS mechanism
+    environment: environments/lee-he.yml
+    runner: scripts/run_e0.py
+    backend: lee_ckks
   fedshe_plain:
-    status: pending
-    role: "FedSHE plaintext/control mechanism"
-    environment: "environments/fedshe-plain-windows.yml"
-    training_script: "scripts/run_fedshe_headless.py"
-    notes: "Runnable control path; not a substitute for full CKKS privacy evaluation."
-
+    status: adapter_pending
+    role: FedSHE plaintext control
+    environment: environments/fedshe-plain-windows.yml
+    runner: scripts/run_e0.py
+    backend: plaintext
   fedshe_ckks:
-    status: blocked
-    role: "FedSHE CKKS encrypted mechanism"
-    environment: "environment.yml"
-    training_script: "scripts/run_fedshe_headless.py"
-    notes: "Run under Linux/WSL once Pyfhel installs successfully."
+    status: adapter_pending_linux
+    role: FedSHE segmented CKKS comparison
+    environment: environments/fedshe-ckks-linux.yml
+    runner: scripts/run_e0.py
+    backend: plaintext
 
 experiments:
-  utility_efficiency:
-    status: pending
-    seeds: [1, 2, 3]
+  e0_aggregation_correctness:
+    status: executable
+    client_counts: [1, 2, 5, 10]
+    seeds: [1, 2, 3, 4, 5]
+    backends: [plaintext, lee_ckks]
+    acceptance:
+      max_relative_l2_error: 0.001
+      min_cosine_similarity: 0.9999
+    metrics: [max_absolute_error, mean_absolute_error, relative_l2_error, cosine_similarity, key_generation_seconds, encryption_seconds, aggregation_seconds, decryption_seconds, ciphertext_bytes]
+  e1_utility_efficiency:
+    status: training_adapter_pending
     mechanisms: [fedavg, lee_he, fedshe_plain, fedshe_ckks]
-    metrics:
-      - final_accuracy
-      - final_loss
-      - total_time
-      - epoch_time
-      - key_generation_time
-      - encryption_time
-      - decryption_time
-      - aggregation_time
-      - total_transmissions
-
-  gradient_inversion:
-    status: pending
-    mechanisms: [fedavg, lee_he, fedshe_plain, fedshe_ckks]
-    tests:
-      - single_client_single_sample
-      - aggregate_2_samples
-      - aggregate_5_samples
-      - encrypted_update_applicability
-    metrics:
-      - best_image_mse
-      - final_gradient_loss
-      - quality_label
-      - applicability
-      - threat_model
-
-  membership_inference:
-    status: pending
-    seeds: [1, 2, 3]
-    mechanisms: [fedavg, lee_he, fedshe_plain, fedshe_ckks]
-    member_samples: 500
-    nonmember_samples: 500
-    metrics:
-      - loss_auc
-      - loss_effective_auc
-      - loss_threshold_accuracy
-      - confidence_auc
-      - confidence_threshold_accuracy
-
-  poisoning:
-    status: pending
-    seeds: [1, 2, 3]
-    mechanisms: [fedavg, lee_he, fedshe_plain, fedshe_ckks]
-    attack:
-      type: targeted_label_flip
-      source_label: 1
-      target_label: 7
-      malicious_clients: [1, 2]
-    metrics:
-      - final_accuracy
-      - source_class_accuracy
-      - targeted_attack_success_rate
-      - non_target_to_target_rate
+    metrics: [test_accuracy, macro_f1, round_seconds, peak_memory_mb, network_bytes]
+  e2_targeted_label_flipping:
+    status: training_adapter_pending
+    threat_model: malicious_clients
+    source_label: 1
+    target_label: 7
+    malicious_fractions: [0.0, 0.1, 0.2]
+    attack_schedules: [all_rounds, first_third, final_third]
+    metrics: [test_accuracy, source_recall, targeted_attack_success_rate, unaffected_macro_recall]
+  e3_gradient_inversion:
+    status: observation_adapter_pending
+    implementation: repos/GIA/OP-GIA/IG
+    observations: [individual_plaintext, aggregate_2, aggregate_5, aggregate_10, ciphertext_only]
+    metrics: [mse, psnr, ssim, lpips, label_recovery, applicability]
+  e4a_fedmia_update_based:
+    status: observation_adapter_pending
+    implementation: repos/FedMIA
+    observations: [individual_plaintext, route_aggregate, ciphertext_only, colluding_clients]
+    metrics: [roc_auc, tpr_at_fpr_01, tpr_at_fpr_001, membership_advantage, applicability]
+  e4b_blackbox_membership:
+    status: model_adapter_pending
+    observations: [global_model]
+    metrics: [loss_auc, confidence_auc, tpr_at_fpr_01, tpr_at_fpr_001]

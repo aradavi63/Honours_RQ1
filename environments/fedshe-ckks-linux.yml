@@ -1,4 +1,4 @@
-name: cits-fedshe-ckks
+name: rq1-fedshe-ckks
 channels:
   - pytorch
   - conda-forge
@@ -11,12 +11,13 @@ dependencies:
   - cmake
   - ninja
   - cython=0.29.37
-  - numpy=1.21.0
+  - numpy=1.21.6
+  - matplotlib=3.5.3
+  - pytorch=1.13.1
+  - torchvision=0.14.1
+  - cpuonly
   - pip:
-      - matplotlib==3.5.3
       - phe==1.5.0
       - Pyfhel==3.4.2
-      - tenseal==0.3.4
+      - tenseal==0.3.14
       - termcolor==1.1.0
-      - torch==1.13.1
-      - torchvision==0.14.1
