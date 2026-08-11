@@ -1,2 +1,0 @@
-backend,dataset,seed,round,clients,samples_per_client,mean_client_loss,test_loss,test_accuracy,round_seconds,key_generation_seconds,encryption_seconds,aggregation_seconds,decryption_seconds,ciphertext_bytes
-lee_ckks,synthetic,1,1,2,20,2.3414247274398803,2.4629326248168946,0.08,0.7106744999999997,0.34732190000000074,0.13679410000000125,0.00203579999999981,0.018295200000000733,4680297
