@@ -149,7 +149,7 @@ experiments:
       interpretation: Three-decimal rounding measurably changes aggregated updates but changed mean final pilot accuracy by only -0.078 percentage points across paired seeds.
     metrics: [test_accuracy, macro_f1, round_seconds, peak_memory_mb, network_bytes, max_absolute_error, mean_absolute_error, relative_l2_error, cosine_similarity, key_generation_seconds, encryption_seconds, aggregation_seconds, decryption_seconds, ciphertext_bytes]
   e2_targeted_label_flipping:
-    status: all_mechanisms_all_rounds_multiseed_completed
+    status: all_mechanisms_all_rounds_and_plaintext_timing_completed
     runner: scripts/run_e2_matrix.py
     threat_model: malicious_clients
     source_label: 1
@@ -172,7 +172,8 @@ experiments:
     result_file_pattern: "results/e2/multiseed/plaintext_all_rounds_fraction-{0,0p1,0p2}_seed-{1..5}.csv"
     lee_result_file_pattern: "results/e2/multiseed/lee_ckks_all_rounds_fraction-{0,0p1,0p2}_seed-{1..5}.csv"
     fedshe_result_file_pattern: "results/e2/multiseed/fedshe_ckks_all_rounds_fraction-{0,0p1,0p2}_seed-{1..5}.csv"
-    completed_result_files: 45
+    plaintext_timing_result_file_pattern: "results/e2/multiseed/plaintext_{first_third,final_third}_fraction-{0p1,0p2}_seed-{1..5}.csv"
+    completed_result_files: 65
     plaintext_multiseed_summary:
       clean_final_accuracy_mean: 0.75276
       clean_final_accuracy_sample_sd: 0.06757694133356434
@@ -218,6 +219,18 @@ experiments:
       mean_decryption_seconds: 0.014340971773326956
       ciphertext_bytes_per_round: 15735420
       interpretation: Published three-decimal rounding perturbs training trajectories slightly but leaves the poisoning dose response substantively unchanged.
+    plaintext_timing_summary:
+      first_third_active_rounds: [1, 2]
+      final_third_active_rounds: [4, 5]
+      fraction_0p1_first_third_peak_asr_mean: 0.30026431718061675
+      fraction_0p1_final_third_peak_asr_mean: 0.011629955947136564
+      fraction_0p2_first_third_peak_asr_mean: 0.5955947136563876
+      fraction_0p2_final_third_peak_asr_mean: 0.012863436123348018
+      fraction_0p1_first_third_final_accuracy_mean: 0.7528
+      fraction_0p1_final_third_final_accuracy_mean: 0.75588
+      fraction_0p2_first_third_final_accuracy_mean: 0.75242
+      fraction_0p2_final_third_final_accuracy_mean: 0.75292
+      interpretation: In this five-round IID pilot, label flipping is most effective during early model formation; the mature model largely resists attacks introduced only in rounds four and five.
     metrics: [test_accuracy, source_recall, targeted_attack_success_rate, unaffected_macro_recall]
   e3_gradient_inversion:
     status: observation_adapter_pending
