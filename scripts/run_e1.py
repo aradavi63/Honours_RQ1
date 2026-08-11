@@ -99,6 +99,7 @@ def main() -> int:
         / "partitions"
         / f"{args.dataset}_iid_clients-{args.clients}_samples-{args.samples_per_client}_seed-{args.seed}.json"
     )
+    manifest = manifest.resolve()
     partitions = load_or_create_iid_partitions(
         manifest,
         args.dataset,

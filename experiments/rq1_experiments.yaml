@@ -39,13 +39,13 @@ mechanisms:
     runner: scripts/run_e0.py
     backend: lee_ckks
   fedshe_plain:
-    status: e0_completed
+    status: e1_multiseed_completed
     role: FedSHE plaintext control
     environment: environments/fedshe-plain-windows.yml
     runner: scripts/run_e1.py
     backend: fedshe_plain
   fedshe_ckks:
-    status: e0_completed_linux
+    status: e1_multiseed_completed_linux
     role: FedSHE segmented CKKS comparison
     environment: environments/fedshe-ckks-linux.yml
     runner: scripts/run_e1.py
@@ -98,8 +98,8 @@ experiments:
       min_cosine_similarity: 0.9999
     metrics: [max_absolute_error, mean_absolute_error, relative_l2_error, cosine_similarity, key_generation_seconds, encryption_seconds, aggregation_seconds, decryption_seconds, ciphertext_bytes]
   e1_utility_efficiency:
-    status: multiseed_pilot_completed
-    runner: scripts/run_e1.py
+    status: multiseed_pilot_completed_all_mechanisms
+    runner: scripts/run_e1_matrix.py
     implemented_mechanisms: [fedavg, lee_he, fedshe_plain, fedshe_ckks]
     pending_validation: []
     pilot_configuration:
@@ -118,8 +118,36 @@ experiments:
       - results/e1/multiseed/lee_ckks_seed_3.csv
       - results/e1/multiseed/lee_ckks_seed_4.csv
       - results/e1/multiseed/lee_ckks_seed_5.csv
+      - results/e1/multiseed/fedshe_plain_seed_1.csv
+      - results/e1/multiseed/fedshe_plain_seed_2.csv
+      - results/e1/multiseed/fedshe_plain_seed_3.csv
+      - results/e1/multiseed/fedshe_plain_seed_4.csv
+      - results/e1/multiseed/fedshe_plain_seed_5.csv
+      - results/e1/multiseed/fedshe_ckks_seed_1.csv
+      - results/e1/multiseed/fedshe_ckks_seed_2.csv
+      - results/e1/multiseed/fedshe_ckks_seed_3.csv
+      - results/e1/multiseed/fedshe_ckks_seed_4.csv
+      - results/e1/multiseed/fedshe_ckks_seed_5.csv
     partition_manifests: results/partitions/mnist_iid_clients-5_samples-100_seed-{1..5}.json
-    metrics: [test_accuracy, macro_f1, round_seconds, peak_memory_mb, network_bytes]
+    completed_result_files: 20
+    completed_round_records: 100
+    fedshe_published_configuration:
+      polynomial_degree: 16384
+      round_decimals: 3
+      plaintext_final_accuracy_mean: 0.71104
+      plaintext_final_accuracy_sample_sd: 0.05107086253432579
+      ckks_final_accuracy_mean: 0.71026
+      ckks_final_accuracy_sample_sd: 0.05187242041779042
+      paired_final_accuracy_difference_ckks_minus_plain: -0.00078
+      ckks_mean_relative_l2_error: 0.0714276616310384
+      ckks_max_relative_l2_error: 0.11062520628198115
+      ckks_mean_key_generation_seconds: 0.02229481244003182
+      ckks_mean_encryption_seconds: 0.26144533555992894
+      ckks_mean_aggregation_seconds: 0.0022025694799776827
+      ckks_mean_decryption_seconds: 0.017224708239791654
+      ckks_ciphertext_bytes_per_round: 7867710
+      interpretation: Three-decimal rounding measurably changes aggregated updates but changed mean final pilot accuracy by only -0.078 percentage points across paired seeds.
+    metrics: [test_accuracy, macro_f1, round_seconds, peak_memory_mb, network_bytes, max_absolute_error, mean_absolute_error, relative_l2_error, cosine_similarity, key_generation_seconds, encryption_seconds, aggregation_seconds, decryption_seconds, ciphertext_bytes]
   e2_targeted_label_flipping:
     status: training_adapter_pending
     threat_model: malicious_clients
