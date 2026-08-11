@@ -5,6 +5,10 @@ from pathlib import Path
 import numpy as np
 
 from rq1_harness.aggregation import weighted_fedavg
+from rq1_harness.fedshe import (
+    fedshe_plain_weighted_fedavg,
+    load_fedshe_ckks_parameters,
+)
 from rq1_harness.metrics import aggregation_error, targeted_attack_success_rate
 from rq1_harness.training import iid_partitions, load_or_create_iid_partitions
 
@@ -20,6 +24,17 @@ class AggregationTests(unittest.TestCase):
             weighted_fedavg(
                 [{"x": np.zeros(2)}, {"x": np.zeros(3)}], [1, 1]
             )
+
+    def test_fedshe_plain_matches_weighted_fedavg(self):
+        updates = [{"x": np.array([1.0, 3.0])}, {"x": np.array([3.0, 7.0])}]
+        expected = weighted_fedavg(updates, [1, 3])
+        actual = fedshe_plain_weighted_fedavg(updates, [1, 3])
+        np.testing.assert_allclose(actual["x"], expected["x"])
+
+    def test_fedshe_ckks_parameters_are_loaded_from_pinned_submodule(self):
+        parameters = load_fedshe_ckks_parameters("128", "0", "8192")
+        self.assertEqual(parameters["scheme"], "CKKS")
+        self.assertEqual(parameters["n"], 8192)
 
     def test_zero_error_metrics(self):
         value = {"x": np.array([1.0, 2.0])}

@@ -18,6 +18,10 @@ sys.path.insert(0, str(ROOT))
 
 from rq1_harness.aggregation import add_to_model, weighted_fedavg
 from rq1_harness.e0 import tenseal_weighted_fedavg
+from rq1_harness.fedshe import (
+    fedshe_ckks_weighted_fedavg,
+    fedshe_plain_weighted_fedavg,
+)
 from rq1_harness.metrics import aggregation_error
 from rq1_harness.training import (
     SmallMnistCNN,
@@ -62,7 +66,11 @@ def write_rows(path: Path, rows: list[dict[str, object]]) -> None:
 
 def main() -> int:
     parser = argparse.ArgumentParser(description="Run the shared E1 FL training pilot")
-    parser.add_argument("--backend", choices=("plaintext", "lee_ckks"), required=True)
+    parser.add_argument(
+        "--backend",
+        choices=("plaintext", "lee_ckks", "fedshe_plain", "fedshe_ckks"),
+        required=True,
+    )
     parser.add_argument("--dataset", choices=("synthetic", "mnist"), default="synthetic")
     parser.add_argument("--clients", type=int, default=2)
     parser.add_argument("--samples-per-client", type=int, default=50)
@@ -71,6 +79,10 @@ def main() -> int:
     parser.add_argument("--batch-size", type=int, default=16)
     parser.add_argument("--learning-rate", type=float, default=0.05)
     parser.add_argument("--seed", type=int, default=1)
+    parser.add_argument("--fedshe-security-level", default="128")
+    parser.add_argument("--fedshe-multiplication-depth", default="0")
+    parser.add_argument("--fedshe-polynomial-degree", default="16384")
+    parser.add_argument("--fedshe-round-decimals", type=int, default=3)
     parser.add_argument("--data-root", type=Path, default=ROOT / "data")
     parser.add_argument("--output", type=Path)
     parser.add_argument("--partition-manifest", type=Path)
@@ -120,8 +132,19 @@ def main() -> int:
         crypto = {}
         if args.backend == "plaintext":
             average = reference_average
-        else:
+        elif args.backend == "lee_ckks":
             average, crypto = tenseal_weighted_fedavg(updates, counts)
+        elif args.backend == "fedshe_plain":
+            average = fedshe_plain_weighted_fedavg(updates, counts)
+        else:
+            average, crypto = fedshe_ckks_weighted_fedavg(
+                updates,
+                counts,
+                security_level=args.fedshe_security_level,
+                multiplication_depth=args.fedshe_multiplication_depth,
+                polynomial_degree=args.fedshe_polynomial_degree,
+                round_decimals=args.fedshe_round_decimals,
+            )
         correctness = aggregation_error(reference_average, average)
         current = state_to_numpy(model.state_dict())
         model.load_state_dict(numpy_to_state(add_to_model(current, average), model.state_dict()))

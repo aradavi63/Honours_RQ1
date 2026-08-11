@@ -39,17 +39,28 @@ mechanisms:
     runner: scripts/run_e0.py
     backend: lee_ckks
   fedshe_plain:
-    status: adapter_pending
+    status: adapter_ready
     role: FedSHE plaintext control
     environment: environments/fedshe-plain-windows.yml
-    runner: scripts/run_e0.py
-    backend: plaintext
+    runner: scripts/run_e1.py
+    backend: fedshe_plain
   fedshe_ckks:
-    status: adapter_pending_linux
+    status: adapter_validated_linux
     role: FedSHE segmented CKKS comparison
     environment: environments/fedshe-ckks-linux.yml
-    runner: scripts/run_e0.py
-    backend: plaintext
+    runner: scripts/run_e1.py
+    backend: fedshe_ckks
+    setup: scripts/setup_fedshe_ckks_wsl.sh
+    validated_parameters:
+      security_level: 128
+      multiplication_depth: 0
+      polynomial_degree: 16384
+      published_round_decimals: 3
+    validation_observation:
+      relative_l2_error_published_rounding: 0.031231937590943514
+      cosine_similarity_published_rounding: 0.9995130959628235
+      relative_l2_error_eight_decimal_diagnostic: 0.000006036354568986959
+      interpretation: Published three-decimal decryption rounding, not CKKS noise, dominates aggregation error.
 
 experiments:
   e0_aggregation_correctness:
@@ -67,8 +78,8 @@ experiments:
   e1_utility_efficiency:
     status: multiseed_pilot_completed
     runner: scripts/run_e1.py
-    implemented_mechanisms: [fedavg, lee_he]
-    pending_mechanisms: [fedshe_plain, fedshe_ckks]
+    implemented_mechanisms: [fedavg, lee_he, fedshe_plain, fedshe_ckks]
+    pending_validation: []
     pilot_configuration:
       clients: 5
       samples_per_client: 100

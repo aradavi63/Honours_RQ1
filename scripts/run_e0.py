@@ -11,6 +11,10 @@ sys.path.insert(0, str(ROOT))
 
 from rq1_harness.aggregation import weighted_fedavg
 from rq1_harness.e0 import deterministic_updates, tenseal_weighted_fedavg
+from rq1_harness.fedshe import (
+    fedshe_ckks_weighted_fedavg,
+    fedshe_plain_weighted_fedavg,
+)
 from rq1_harness.metrics import aggregation_error
 
 
@@ -19,10 +23,16 @@ def main() -> int:
         description="Run E0 deterministic aggregation correctness tests"
     )
     parser.add_argument(
-        "--backend", choices=("plaintext", "lee_ckks"), default="plaintext"
+        "--backend",
+        choices=("plaintext", "lee_ckks", "fedshe_plain", "fedshe_ckks"),
+        default="plaintext",
     )
     parser.add_argument("--clients", type=int, default=5)
     parser.add_argument("--seed", type=int, default=1)
+    parser.add_argument("--fedshe-security-level", default="128")
+    parser.add_argument("--fedshe-multiplication-depth", default="0")
+    parser.add_argument("--fedshe-polynomial-degree", default="16384")
+    parser.add_argument("--fedshe-round-decimals", type=int, default=3)
     parser.add_argument("--output", type=Path)
     args = parser.parse_args()
     if args.clients < 1:
@@ -33,8 +43,19 @@ def main() -> int:
     timing = {}
     if args.backend == "plaintext":
         candidate = weighted_fedavg(updates, counts)
-    else:
+    elif args.backend == "lee_ckks":
         candidate, timing = tenseal_weighted_fedavg(updates, counts)
+    elif args.backend == "fedshe_plain":
+        candidate = fedshe_plain_weighted_fedavg(updates, counts)
+    else:
+        candidate, timing = fedshe_ckks_weighted_fedavg(
+            updates,
+            counts,
+            security_level=args.fedshe_security_level,
+            multiplication_depth=args.fedshe_multiplication_depth,
+            polynomial_degree=args.fedshe_polynomial_degree,
+            round_decimals=args.fedshe_round_decimals,
+        )
     result = {
         "backend": args.backend,
         "clients": args.clients,
@@ -60,4 +81,3 @@ def main() -> int:
 
 if __name__ == "__main__":
     raise SystemExit(main())
-
