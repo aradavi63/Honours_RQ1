@@ -66,7 +66,7 @@ experiments:
   e0_aggregation_correctness:
     status: completed_all_mechanisms
     runner: scripts/run_e0_matrix.py
-    result_files:
+    example_result_files:
       - results/e0/plaintext.csv
       - results/e0/lee_ckks.csv
       - results/e0/fedshe_plain.csv
@@ -149,7 +149,7 @@ experiments:
       interpretation: Three-decimal rounding measurably changes aggregated updates but changed mean final pilot accuracy by only -0.078 percentage points across paired seeds.
     metrics: [test_accuracy, macro_f1, round_seconds, peak_memory_mb, network_bytes, max_absolute_error, mean_absolute_error, relative_l2_error, cosine_similarity, key_generation_seconds, encryption_seconds, aggregation_seconds, decryption_seconds, ciphertext_bytes]
   e2_targeted_label_flipping:
-    status: plaintext_seed1_pilot_completed
+    status: plaintext_all_rounds_multiseed_completed
     runner: scripts/run_e2_matrix.py
     threat_model: malicious_clients
     source_label: 1
@@ -162,21 +162,30 @@ experiments:
       samples_per_client: 100
       rounds: 5
       local_epochs: 1
-      seed: 1
+      seeds: [1, 2, 3, 4, 5]
       completed_schedule: all_rounds
       malicious_client_selection: deterministic seeded sample without replacement
     result_files:
       - results/e2/multiseed/plaintext_all_rounds_fraction-0_seed-1.csv
       - results/e2/multiseed/plaintext_all_rounds_fraction-0p1_seed-1.csv
       - results/e2/multiseed/plaintext_all_rounds_fraction-0p2_seed-1.csv
-    pilot_observation:
-      clean_final_accuracy: 0.7336
-      fraction_0p1_final_accuracy: 0.7348
-      fraction_0p2_final_accuracy: 0.7337
-      clean_peak_targeted_asr: 0.000881057268722467
-      fraction_0p1_peak_targeted_asr: 0.38854625550660793
-      fraction_0p2_peak_targeted_asr: 0.7991189427312775
-      interpretation: Final accuracy hides a strong transient targeted effect; report peak and round-wise ASR as well as final metrics.
+    result_file_pattern: "results/e2/multiseed/plaintext_all_rounds_fraction-{0,0p1,0p2}_seed-{1..5}.csv"
+    completed_result_files: 15
+    plaintext_multiseed_summary:
+      clean_final_accuracy_mean: 0.75276
+      clean_final_accuracy_sample_sd: 0.06757694133356434
+      fraction_0p1_final_accuracy_mean: 0.75444
+      fraction_0p1_final_accuracy_sample_sd: 0.06930896767374334
+      fraction_0p2_final_accuracy_mean: 0.7521
+      fraction_0p2_final_accuracy_sample_sd: 0.06888203684561017
+      paired_final_accuracy_delta_fraction_0p1: 0.00168
+      paired_final_accuracy_delta_fraction_0p2: -0.00066
+      clean_peak_targeted_asr_mean: 0.011277533039647578
+      fraction_0p1_peak_targeted_asr_mean: 0.30026431718061675
+      fraction_0p1_peak_targeted_asr_sample_sd: 0.18897127771838496
+      fraction_0p2_peak_targeted_asr_mean: 0.5955947136563876
+      fraction_0p2_peak_targeted_asr_sample_sd: 0.3049737451513116
+      interpretation: Final accuracy hides a strong transient and seed-sensitive targeted effect; peak round-wise ASR shows a clear malicious-client dose response.
     metrics: [test_accuracy, source_recall, targeted_attack_success_rate, unaffected_macro_recall]
   e3_gradient_inversion:
     status: observation_adapter_pending
