@@ -39,13 +39,13 @@ mechanisms:
     runner: scripts/run_e0.py
     backend: lee_ckks
   fedshe_plain:
-    status: adapter_ready
+    status: e0_completed
     role: FedSHE plaintext control
     environment: environments/fedshe-plain-windows.yml
     runner: scripts/run_e1.py
     backend: fedshe_plain
   fedshe_ckks:
-    status: adapter_validated_linux
+    status: e0_completed_linux
     role: FedSHE segmented CKKS comparison
     environment: environments/fedshe-ckks-linux.yml
     runner: scripts/run_e1.py
@@ -64,13 +64,35 @@ mechanisms:
 
 experiments:
   e0_aggregation_correctness:
-    status: completed
+    status: completed_all_mechanisms
     runner: scripts/run_e0_matrix.py
-    result_files: [results/e0/plaintext.csv, results/e0/lee_ckks.csv]
-    completed_runs: 40
+    result_files:
+      - results/e0/plaintext.csv
+      - results/e0/lee_ckks.csv
+      - results/e0/fedshe_plain.csv
+      - results/e0/fedshe_ckks_round3.csv
+      - results/e0/fedshe_ckks_round8.csv
+    completed_runs: 100
     client_counts: [1, 2, 5, 10]
     seeds: [1, 2, 3, 4, 5]
-    backends: [plaintext, lee_ckks]
+    backends: [plaintext, lee_ckks, fedshe_plain, fedshe_ckks]
+    fedshe_configurations:
+      published:
+        polynomial_degree: 16384
+        round_decimals: 3
+        passed_runs: 0
+        total_runs: 20
+        mean_relative_l2_error: 0.0424020239090022
+        max_relative_l2_error: 0.0696098919483585
+        min_cosine_similarity: 0.997588401637973
+      diagnostic:
+        polynomial_degree: 16384
+        round_decimals: 8
+        passed_runs: 20
+        total_runs: 20
+        mean_relative_l2_error: 0.0000133139505475579
+        max_relative_l2_error: 0.0000299560680900955
+        min_cosine_similarity: 0.999999999551372
     acceptance:
       max_relative_l2_error: 0.001
       min_cosine_similarity: 0.9999

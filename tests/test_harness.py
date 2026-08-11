@@ -11,6 +11,7 @@ from rq1_harness.fedshe import (
 )
 from rq1_harness.metrics import aggregation_error, targeted_attack_success_rate
 from rq1_harness.training import iid_partitions, load_or_create_iid_partitions
+from scripts.run_e0_matrix import run_one
 
 
 class AggregationTests(unittest.TestCase):
@@ -35,6 +36,11 @@ class AggregationTests(unittest.TestCase):
         parameters = load_fedshe_ckks_parameters("128", "0", "8192")
         self.assertEqual(parameters["scheme"], "CKKS")
         self.assertEqual(parameters["n"], 8192)
+
+    def test_fedshe_plain_matrix_row_passes(self):
+        row = run_one("fedshe_plain", clients=2, seed=1)
+        self.assertTrue(row["passes_acceptance"])
+        self.assertEqual(row["relative_l2_error"], 0.0)
 
     def test_zero_error_metrics(self):
         value = {"x": np.array([1.0, 2.0])}
