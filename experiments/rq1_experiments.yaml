@@ -149,7 +149,7 @@ experiments:
       interpretation: Three-decimal rounding measurably changes aggregated updates but changed mean final pilot accuracy by only -0.078 percentage points across paired seeds.
     metrics: [test_accuracy, macro_f1, round_seconds, peak_memory_mb, network_bytes, max_absolute_error, mean_absolute_error, relative_l2_error, cosine_similarity, key_generation_seconds, encryption_seconds, aggregation_seconds, decryption_seconds, ciphertext_bytes]
   e2_targeted_label_flipping:
-    status: plaintext_all_rounds_multiseed_completed
+    status: plaintext_and_lee_all_rounds_multiseed_completed
     runner: scripts/run_e2_matrix.py
     threat_model: malicious_clients
     source_label: 1
@@ -170,7 +170,8 @@ experiments:
       - results/e2/multiseed/plaintext_all_rounds_fraction-0p1_seed-1.csv
       - results/e2/multiseed/plaintext_all_rounds_fraction-0p2_seed-1.csv
     result_file_pattern: "results/e2/multiseed/plaintext_all_rounds_fraction-{0,0p1,0p2}_seed-{1..5}.csv"
-    completed_result_files: 15
+    lee_result_file_pattern: "results/e2/multiseed/lee_ckks_all_rounds_fraction-{0,0p1,0p2}_seed-{1..5}.csv"
+    completed_result_files: 30
     plaintext_multiseed_summary:
       clean_final_accuracy_mean: 0.75276
       clean_final_accuracy_sample_sd: 0.06757694133356434
@@ -186,6 +187,17 @@ experiments:
       fraction_0p2_peak_targeted_asr_mean: 0.5955947136563876
       fraction_0p2_peak_targeted_asr_sample_sd: 0.3049737451513116
       interpretation: Final accuracy hides a strong transient and seed-sensitive targeted effect; peak round-wise ASR shows a clear malicious-client dose response.
+    lee_ckks_multiseed_summary:
+      accuracy_difference_from_plaintext_all_75_rounds: 0.0
+      targeted_asr_difference_from_plaintext_all_75_rounds: 0.0
+      mean_relative_l2_error: 0.0000011331824064389076
+      max_relative_l2_error: 0.0000016921787312655386
+      mean_key_generation_seconds: 0.32968473333333354
+      mean_encryption_seconds: 0.5661489280000019
+      mean_aggregation_seconds: 0.010368061333333926
+      mean_decryption_seconds: 0.01497438000000083
+      mean_ciphertext_bytes_per_round: 23400058.573333334
+      interpretation: Lee CKKS preserves the plaintext poisoning trajectory exactly at the prediction level; confidentiality alone does not reject malicious updates.
     metrics: [test_accuracy, source_recall, targeted_attack_success_rate, unaffected_macro_recall]
   e3_gradient_inversion:
     status: observation_adapter_pending
