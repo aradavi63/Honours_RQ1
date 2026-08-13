@@ -1,0 +1,2 @@
+observation,dataset,seed,aggregate_size,true_target_label,inferred_label,iterations,final_gradient_mismatch,attack_seconds,applicability,reason,mse,psnr,ssim,label_recovery
+ciphertext_only,mnist,1,,,,0,,0.0,not_applicable,The attacker cannot compute gradient mismatch from CKKS ciphertext coefficients without a decryption key.,nan,nan,nan,nan
