@@ -295,7 +295,7 @@ experiments:
     observations: [individual_plaintext, route_aggregate, ciphertext_only, colluding_clients]
     metrics: [roc_auc, tpr_at_fpr_01, tpr_at_fpr_001, membership_advantage, applicability]
   e4b_blackbox_membership:
-    status: plaintext_multiseed_pilot_completed
+    status: multiseed_pilot_completed_all_main_mechanisms
     implementation: rq1_harness/membership.py
     runner: scripts/run_e4b_matrix.py
     observations: [global_model]
@@ -308,6 +308,8 @@ experiments:
       local_epochs: 1
       seeds: [1, 2, 3, 4, 5]
     plaintext_result_file_pattern: "results/e4b/multiseed/plaintext_seed-{1..5}.csv"
+    lee_result_file_pattern: "results/e4b/multiseed/lee_ckks_seed-{1..5}.csv"
+    fedshe_result_file_pattern: "results/e4b/multiseed/fedshe_ckks_seed-{1..5}.csv"
     plaintext_summary:
       mean_roc_auc: 0.52938
       sample_sd_roc_auc: 0.0175220841226151
@@ -316,4 +318,30 @@ experiments:
       mean_membership_advantage: 0.0808
       score_equivalence: Negative cross-entropy is the logarithm of true-class confidence, so both scores have identical ROC rankings and metrics.
       interpretation: This short five-round global-model baseline shows only weak sample-membership leakage; it does not test FedMIA's stronger multi-client, multi-round update observations.
+    lee_ckks_summary:
+      mean_roc_auc: 0.52938
+      mean_tpr_at_fpr_01: 0.012
+      mean_tpr_at_fpr_001: 0.0036
+      mean_membership_advantage: 0.0808
+      paired_metric_difference_from_plaintext: 0.0
+      mean_total_key_generation_seconds: 2.3466849
+      mean_total_encryption_seconds: 2.89199508000001
+      mean_total_aggregation_seconds: 0.0554564000000088
+      mean_total_decryption_seconds: 0.149513960000003
+      mean_total_ciphertext_bytes: 58498344.4
+      interpretation: Lee CKKS preserved every score ranking and membership metric exactly in this pilot.
+    fedshe_ckks_summary:
+      mean_roc_auc: 0.5295048
+      paired_mean_roc_auc_difference_from_plaintext: 0.000124799999999947
+      maximum_absolute_paired_roc_auc_difference: 0.000255999999999812
+      mean_tpr_at_fpr_01: 0.012
+      mean_tpr_at_fpr_001: 0.0032
+      mean_membership_advantage: 0.0808
+      mean_total_key_generation_seconds: 0.0970975236000072
+      mean_total_encryption_seconds: 1.30807953999985
+      mean_total_aggregation_seconds: 0.0141552723999666
+      mean_total_decryption_seconds: 0.0972211011999661
+      mean_total_ciphertext_bytes: 39338550
+      interpretation: FedSHE three-decimal rounding changed a few score rankings but did not materially change weak black-box membership leakage.
+    cross_mechanism_interpretation: Aggregation encryption protects updates in transit but does not hide the final global model from a black-box attacker; membership leakage therefore remained essentially unchanged when utility was preserved.
     metrics: [roc_auc, tpr_at_fpr_01, tpr_at_fpr_001, membership_advantage]

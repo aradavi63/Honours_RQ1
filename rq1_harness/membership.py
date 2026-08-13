@@ -4,7 +4,6 @@ from collections.abc import Sequence
 
 import numpy as np
 import torch
-from sklearn.metrics import roc_auc_score, roc_curve
 from torch import nn
 from torch.utils.data import DataLoader, Dataset, Subset
 
@@ -19,14 +18,20 @@ def membership_metrics(
         raise ValueError("member and nonmember scores must be non-empty vectors")
     labels = np.concatenate([np.ones(len(members)), np.zeros(len(nonmembers))])
     scores = np.concatenate([members, nonmembers])
-    fpr, tpr, _ = roc_curve(labels, scores)
+    order = np.argsort(-scores, kind="stable")
+    sorted_scores, sorted_labels = scores[order], labels[order]
+    group_ends = np.r_[np.flatnonzero(np.diff(sorted_scores)) + 1, len(scores)]
+    true_positives = np.cumsum(sorted_labels)[group_ends - 1]
+    false_positives = group_ends - true_positives
+    tpr = np.r_[0.0, true_positives / len(members)]
+    fpr = np.r_[0.0, false_positives / len(nonmembers)]
 
     def tpr_at(maximum_fpr: float) -> float:
         eligible = tpr[fpr <= maximum_fpr]
         return float(np.max(eligible)) if len(eligible) else 0.0
 
     return {
-        "roc_auc": float(roc_auc_score(labels, scores)),
+        "roc_auc": float(np.trapz(tpr, fpr)),
         "tpr_at_fpr_01": tpr_at(0.01),
         "tpr_at_fpr_001": tpr_at(0.001),
         "membership_advantage": float(np.max(tpr - fpr)),
