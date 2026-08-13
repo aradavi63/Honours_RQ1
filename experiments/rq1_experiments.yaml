@@ -295,6 +295,25 @@ experiments:
     observations: [individual_plaintext, route_aggregate, ciphertext_only, colluding_clients]
     metrics: [roc_auc, tpr_at_fpr_01, tpr_at_fpr_001, membership_advantage, applicability]
   e4b_blackbox_membership:
-    status: model_adapter_pending
+    status: plaintext_multiseed_pilot_completed
+    implementation: rq1_harness/membership.py
+    runner: scripts/run_e4b_matrix.py
     observations: [global_model]
-    metrics: [loss_auc, confidence_auc, tpr_at_fpr_01, tpr_at_fpr_001]
+    attack_model: Equal-sized member and held-out nonmember sets scored by negative cross-entropy loss and true-class confidence.
+    pilot_configuration:
+      dataset: MNIST
+      clients: 5
+      samples_per_client: 100
+      rounds: 5
+      local_epochs: 1
+      seeds: [1, 2, 3, 4, 5]
+    plaintext_result_file_pattern: "results/e4b/multiseed/plaintext_seed-{1..5}.csv"
+    plaintext_summary:
+      mean_roc_auc: 0.52938
+      sample_sd_roc_auc: 0.0175220841226151
+      mean_tpr_at_fpr_01: 0.012
+      mean_tpr_at_fpr_001: 0.0036
+      mean_membership_advantage: 0.0808
+      score_equivalence: Negative cross-entropy is the logarithm of true-class confidence, so both scores have identical ROC rankings and metrics.
+      interpretation: This short five-round global-model baseline shows only weak sample-membership leakage; it does not test FedMIA's stronger multi-client, multi-round update observations.
+    metrics: [roc_auc, tpr_at_fpr_01, tpr_at_fpr_001, membership_advantage]

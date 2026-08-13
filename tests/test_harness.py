@@ -11,6 +11,7 @@ from rq1_harness.fedshe import (
     load_fedshe_ckks_parameters,
 )
 from rq1_harness.metrics import aggregation_error, targeted_attack_success_rate
+from rq1_harness.membership import membership_metrics
 from rq1_harness.inversion import (
     average_gradients,
     ciphertext_only_result,
@@ -152,6 +153,17 @@ class AggregationTests(unittest.TestCase):
         result = ciphertext_only_result()
         self.assertEqual(result["applicability"], "not_applicable")
         self.assertTrue(np.isnan(result["mse"]))
+
+    def test_membership_metrics_identify_perfect_separation(self):
+        values = membership_metrics([0.9, 0.8, 0.7], [0.3, 0.2, 0.1])
+        self.assertEqual(values["roc_auc"], 1.0)
+        self.assertEqual(values["tpr_at_fpr_01"], 1.0)
+        self.assertEqual(values["tpr_at_fpr_001"], 1.0)
+        self.assertEqual(values["membership_advantage"], 1.0)
+
+    def test_membership_metrics_reject_empty_scores(self):
+        with self.assertRaises(ValueError):
+            membership_metrics([], [0.1])
 
 
 if __name__ == "__main__":

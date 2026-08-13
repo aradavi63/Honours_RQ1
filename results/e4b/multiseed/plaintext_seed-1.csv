@@ -1,0 +1,2 @@
+backend,dataset,seed,clients,samples_per_client,rounds,member_samples,nonmember_samples,partition_manifest,loss_roc_auc,loss_tpr_at_fpr_01,loss_tpr_at_fpr_001,loss_membership_advantage,confidence_roc_auc,confidence_tpr_at_fpr_01,confidence_tpr_at_fpr_001,confidence_membership_advantage
+plaintext,mnist,1,5,100,5,500,500,results\partitions\mnist_iid_clients-5_samples-100_seed-1.json,0.5271239999999999,0.014,0.0,0.06600000000000006,0.5271239999999999,0.014,0.0,0.06600000000000006
