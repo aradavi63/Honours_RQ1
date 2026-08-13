@@ -39,13 +39,13 @@ mechanisms:
     runner: scripts/run_e0.py
     backend: lee_ckks
   fedshe_plain:
-    status: adapter_ready
+    status: e1_multiseed_completed
     role: FedSHE plaintext control
     environment: environments/fedshe-plain-windows.yml
     runner: scripts/run_e1.py
     backend: fedshe_plain
   fedshe_ckks:
-    status: adapter_validated_linux
+    status: e1_multiseed_completed_linux
     role: FedSHE segmented CKKS comparison
     environment: environments/fedshe-ckks-linux.yml
     runner: scripts/run_e1.py
@@ -64,20 +64,42 @@ mechanisms:
 
 experiments:
   e0_aggregation_correctness:
-    status: completed
+    status: completed_all_mechanisms
     runner: scripts/run_e0_matrix.py
-    result_files: [results/e0/plaintext.csv, results/e0/lee_ckks.csv]
-    completed_runs: 40
+    example_result_files:
+      - results/e0/plaintext.csv
+      - results/e0/lee_ckks.csv
+      - results/e0/fedshe_plain.csv
+      - results/e0/fedshe_ckks_round3.csv
+      - results/e0/fedshe_ckks_round8.csv
+    completed_runs: 100
     client_counts: [1, 2, 5, 10]
     seeds: [1, 2, 3, 4, 5]
-    backends: [plaintext, lee_ckks]
+    backends: [plaintext, lee_ckks, fedshe_plain, fedshe_ckks]
+    fedshe_configurations:
+      published:
+        polynomial_degree: 16384
+        round_decimals: 3
+        passed_runs: 0
+        total_runs: 20
+        mean_relative_l2_error: 0.0424020239090022
+        max_relative_l2_error: 0.0696098919483585
+        min_cosine_similarity: 0.997588401637973
+      diagnostic:
+        polynomial_degree: 16384
+        round_decimals: 8
+        passed_runs: 20
+        total_runs: 20
+        mean_relative_l2_error: 0.0000133139505475579
+        max_relative_l2_error: 0.0000299560680900955
+        min_cosine_similarity: 0.999999999551372
     acceptance:
       max_relative_l2_error: 0.001
       min_cosine_similarity: 0.9999
     metrics: [max_absolute_error, mean_absolute_error, relative_l2_error, cosine_similarity, key_generation_seconds, encryption_seconds, aggregation_seconds, decryption_seconds, ciphertext_bytes]
   e1_utility_efficiency:
-    status: multiseed_pilot_completed
-    runner: scripts/run_e1.py
+    status: multiseed_pilot_completed_all_mechanisms
+    runner: scripts/run_e1_matrix.py
     implemented_mechanisms: [fedavg, lee_he, fedshe_plain, fedshe_ckks]
     pending_validation: []
     pilot_configuration:
@@ -96,15 +118,137 @@ experiments:
       - results/e1/multiseed/lee_ckks_seed_3.csv
       - results/e1/multiseed/lee_ckks_seed_4.csv
       - results/e1/multiseed/lee_ckks_seed_5.csv
+      - results/e1/multiseed/fedshe_plain_seed_1.csv
+      - results/e1/multiseed/fedshe_plain_seed_2.csv
+      - results/e1/multiseed/fedshe_plain_seed_3.csv
+      - results/e1/multiseed/fedshe_plain_seed_4.csv
+      - results/e1/multiseed/fedshe_plain_seed_5.csv
+      - results/e1/multiseed/fedshe_ckks_seed_1.csv
+      - results/e1/multiseed/fedshe_ckks_seed_2.csv
+      - results/e1/multiseed/fedshe_ckks_seed_3.csv
+      - results/e1/multiseed/fedshe_ckks_seed_4.csv
+      - results/e1/multiseed/fedshe_ckks_seed_5.csv
     partition_manifests: results/partitions/mnist_iid_clients-5_samples-100_seed-{1..5}.json
-    metrics: [test_accuracy, macro_f1, round_seconds, peak_memory_mb, network_bytes]
+    completed_result_files: 20
+    completed_round_records: 100
+    fedshe_published_configuration:
+      polynomial_degree: 16384
+      round_decimals: 3
+      plaintext_final_accuracy_mean: 0.71104
+      plaintext_final_accuracy_sample_sd: 0.05107086253432579
+      ckks_final_accuracy_mean: 0.71026
+      ckks_final_accuracy_sample_sd: 0.05187242041779042
+      paired_final_accuracy_difference_ckks_minus_plain: -0.00078
+      ckks_mean_relative_l2_error: 0.0714276616310384
+      ckks_max_relative_l2_error: 0.11062520628198115
+      ckks_mean_key_generation_seconds: 0.02229481244003182
+      ckks_mean_encryption_seconds: 0.26144533555992894
+      ckks_mean_aggregation_seconds: 0.0022025694799776827
+      ckks_mean_decryption_seconds: 0.017224708239791654
+      ckks_ciphertext_bytes_per_round: 7867710
+      interpretation: Three-decimal rounding measurably changes aggregated updates but changed mean final pilot accuracy by only -0.078 percentage points across paired seeds.
+    metrics: [test_accuracy, macro_f1, round_seconds, peak_memory_mb, network_bytes, max_absolute_error, mean_absolute_error, relative_l2_error, cosine_similarity, key_generation_seconds, encryption_seconds, aggregation_seconds, decryption_seconds, ciphertext_bytes]
   e2_targeted_label_flipping:
-    status: training_adapter_pending
+    status: completed_all_mechanisms_and_timings
+    runner: scripts/run_e2_matrix.py
     threat_model: malicious_clients
     source_label: 1
     target_label: 7
     malicious_fractions: [0.0, 0.1, 0.2]
     attack_schedules: [all_rounds, first_third, final_third]
+    pilot_configuration:
+      dataset: MNIST
+      clients: 10
+      samples_per_client: 100
+      rounds: 5
+      local_epochs: 1
+      seeds: [1, 2, 3, 4, 5]
+      completed_schedule: all_rounds
+      malicious_client_selection: deterministic seeded sample without replacement
+    result_files:
+      - results/e2/multiseed/plaintext_all_rounds_fraction-0_seed-1.csv
+      - results/e2/multiseed/plaintext_all_rounds_fraction-0p1_seed-1.csv
+      - results/e2/multiseed/plaintext_all_rounds_fraction-0p2_seed-1.csv
+    result_file_pattern: "results/e2/multiseed/plaintext_all_rounds_fraction-{0,0p1,0p2}_seed-{1..5}.csv"
+    lee_result_file_pattern: "results/e2/multiseed/lee_ckks_all_rounds_fraction-{0,0p1,0p2}_seed-{1..5}.csv"
+    fedshe_result_file_pattern: "results/e2/multiseed/fedshe_ckks_all_rounds_fraction-{0,0p1,0p2}_seed-{1..5}.csv"
+    plaintext_timing_result_file_pattern: "results/e2/multiseed/plaintext_{first_third,final_third}_fraction-{0p1,0p2}_seed-{1..5}.csv"
+    lee_timing_result_file_pattern: "results/e2/multiseed/lee_ckks_{first_third,final_third}_fraction-{0p1,0p2}_seed-{1..5}.csv"
+    fedshe_timing_result_file_pattern: "results/e2/multiseed/fedshe_ckks_{first_third,final_third}_fraction-{0p1,0p2}_seed-{1..5}.csv"
+    completed_result_files: 105
+    plaintext_multiseed_summary:
+      clean_final_accuracy_mean: 0.75276
+      clean_final_accuracy_sample_sd: 0.06757694133356434
+      fraction_0p1_final_accuracy_mean: 0.75444
+      fraction_0p1_final_accuracy_sample_sd: 0.06930896767374334
+      fraction_0p2_final_accuracy_mean: 0.7521
+      fraction_0p2_final_accuracy_sample_sd: 0.06888203684561017
+      paired_final_accuracy_delta_fraction_0p1: 0.00168
+      paired_final_accuracy_delta_fraction_0p2: -0.00066
+      clean_peak_targeted_asr_mean: 0.011277533039647578
+      fraction_0p1_peak_targeted_asr_mean: 0.30026431718061675
+      fraction_0p1_peak_targeted_asr_sample_sd: 0.18897127771838496
+      fraction_0p2_peak_targeted_asr_mean: 0.5955947136563876
+      fraction_0p2_peak_targeted_asr_sample_sd: 0.3049737451513116
+      interpretation: Final accuracy hides a strong transient and seed-sensitive targeted effect; peak round-wise ASR shows a clear malicious-client dose response.
+    lee_ckks_multiseed_summary:
+      accuracy_difference_from_plaintext_all_75_rounds: 0.0
+      targeted_asr_difference_from_plaintext_all_75_rounds: 0.0
+      mean_relative_l2_error: 0.0000011331824064389076
+      max_relative_l2_error: 0.0000016921787312655386
+      mean_key_generation_seconds: 0.32968473333333354
+      mean_encryption_seconds: 0.5661489280000019
+      mean_aggregation_seconds: 0.010368061333333926
+      mean_decryption_seconds: 0.01497438000000083
+      mean_ciphertext_bytes_per_round: 23400058.573333334
+      interpretation: Lee CKKS preserves the plaintext poisoning trajectory exactly at the prediction level; confidentiality alone does not reject malicious updates.
+    fedshe_ckks_multiseed_summary:
+      clean_final_accuracy_mean: 0.75306
+      fraction_0p1_final_accuracy_mean: 0.75422
+      fraction_0p2_final_accuracy_mean: 0.75288
+      clean_peak_targeted_asr_mean: 0.011277533039647576
+      fraction_0p1_peak_targeted_asr_mean: 0.29691629955947135
+      fraction_0p2_peak_targeted_asr_mean: 0.5904845814977974
+      mean_accuracy_delta_from_plaintext_all_75_rounds: 0.0000946666666666666
+      max_absolute_accuracy_delta_from_plaintext: 0.0055
+      mean_targeted_asr_delta_from_plaintext_all_75_rounds: -0.000575624082232014
+      max_absolute_targeted_asr_delta_from_plaintext: 0.01585903083700435
+      mean_relative_l2_error: 0.07631119075990116
+      max_relative_l2_error: 0.11742626064151397
+      mean_key_generation_seconds: 0.013365805200002375
+      mean_encryption_seconds: 0.38931085883998723
+      mean_aggregation_seconds: 0.0035472099199885796
+      mean_decryption_seconds: 0.014340971773326956
+      ciphertext_bytes_per_round: 15735420
+      interpretation: Published three-decimal rounding perturbs training trajectories slightly but leaves the poisoning dose response substantively unchanged.
+    plaintext_timing_summary:
+      first_third_active_rounds: [1, 2]
+      final_third_active_rounds: [4, 5]
+      fraction_0p1_first_third_peak_asr_mean: 0.30026431718061675
+      fraction_0p1_final_third_peak_asr_mean: 0.011629955947136564
+      fraction_0p2_first_third_peak_asr_mean: 0.5955947136563876
+      fraction_0p2_final_third_peak_asr_mean: 0.012863436123348018
+      fraction_0p1_first_third_final_accuracy_mean: 0.7528
+      fraction_0p1_final_third_final_accuracy_mean: 0.75588
+      fraction_0p2_first_third_final_accuracy_mean: 0.75242
+      fraction_0p2_final_third_final_accuracy_mean: 0.75292
+      interpretation: In this five-round IID pilot, label flipping is most effective during early model formation; the mature model largely resists attacks introduced only in rounds four and five.
+    lee_ckks_timing_summary:
+      targeted_asr_difference_from_plaintext_all_100_rounds: 0.0
+      max_absolute_accuracy_difference_from_plaintext: 0.0002
+      mean_relative_l2_error: 0.000001126345449397307
+      max_relative_l2_error: 0.0000016802022513832035
+      interpretation: Lee CKKS preserves the timing conclusion; negligible approximation error changes a few accuracy values but no targeted ASR values.
+    fedshe_ckks_timing_summary:
+      fraction_0p1_first_third_peak_asr_mean: 0.2974449339207048
+      fraction_0p1_final_third_peak_asr_mean: 0.01145374449339207
+      fraction_0p2_first_third_peak_asr_mean: 0.5904845814977974
+      fraction_0p2_final_third_peak_asr_mean: 0.012687224669603524
+      max_absolute_accuracy_difference_from_plaintext: 0.0055
+      max_absolute_targeted_asr_difference_from_plaintext: 0.01585903083700435
+      mean_relative_l2_error: 0.07594989477251139
+      max_relative_l2_error: 0.11742626039639656
+      interpretation: FedSHE rounding perturbs individual outcomes slightly but preserves the finding that early model formation is substantially more vulnerable than late rounds.
     metrics: [test_accuracy, source_recall, targeted_attack_success_rate, unaffected_macro_recall]
   e3_gradient_inversion:
     status: observation_adapter_pending

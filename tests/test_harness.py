@@ -3,6 +3,7 @@ import tempfile
 from pathlib import Path
 
 import numpy as np
+import torch
 
 from rq1_harness.aggregation import weighted_fedavg
 from rq1_harness.fedshe import (
@@ -10,7 +11,14 @@ from rq1_harness.fedshe import (
     load_fedshe_ckks_parameters,
 )
 from rq1_harness.metrics import aggregation_error, targeted_attack_success_rate
+from rq1_harness.poisoning import (
+    attack_is_active,
+    attack_metrics,
+    flip_source_labels,
+    select_malicious_clients,
+)
 from rq1_harness.training import iid_partitions, load_or_create_iid_partitions
+from scripts.run_e0_matrix import run_one
 
 
 class AggregationTests(unittest.TestCase):
@@ -35,6 +43,11 @@ class AggregationTests(unittest.TestCase):
         parameters = load_fedshe_ckks_parameters("128", "0", "8192")
         self.assertEqual(parameters["scheme"], "CKKS")
         self.assertEqual(parameters["n"], 8192)
+
+    def test_fedshe_plain_matrix_row_passes(self):
+        row = run_one("fedshe_plain", clients=2, seed=1)
+        self.assertTrue(row["passes_acceptance"])
+        self.assertEqual(row["relative_l2_error"], 0.0)
 
     def test_zero_error_metrics(self):
         value = {"x": np.array([1.0, 2.0])}
@@ -68,6 +81,36 @@ class AggregationTests(unittest.TestCase):
             self.assertEqual(created, loaded)
             with self.assertRaises(ValueError):
                 load_or_create_iid_partitions(path, "test", 100, 5, 10, 7)
+
+    def test_label_flipping_does_not_mutate_clean_targets(self):
+        clean = torch.tensor([1, 2, 1, 7])
+        poisoned = flip_source_labels(clean, 1, 7)
+        self.assertEqual(clean.tolist(), [1, 2, 1, 7])
+        self.assertEqual(poisoned.tolist(), [7, 2, 7, 7])
+
+    def test_malicious_client_selection_is_reproducible(self):
+        first = select_malicious_clients(10, 0.2, 4)
+        second = select_malicious_clients(10, 0.2, 4)
+        self.assertEqual(first, second)
+        self.assertEqual(len(first), 2)
+        with self.assertRaises(ValueError):
+            select_malicious_clients(5, 0.1, 4)
+
+    def test_attack_schedules(self):
+        self.assertEqual(
+            [attack_is_active(i, 5, "first_third") for i in range(5)],
+            [True, True, False, False, False],
+        )
+        self.assertEqual(
+            [attack_is_active(i, 5, "final_third") for i in range(5)],
+            [False, False, False, True, True],
+        )
+
+    def test_attack_metrics_separate_source_and_unaffected_classes(self):
+        values = attack_metrics([1, 1, 2, 2, 7, 7], [7, 1, 2, 3, 7, 7], 1, 7)
+        self.assertEqual(values["source_recall"], 0.5)
+        self.assertEqual(values["targeted_attack_success_rate"], 0.5)
+        self.assertEqual(values["unaffected_macro_recall"], 0.75)
 
 
 if __name__ == "__main__":

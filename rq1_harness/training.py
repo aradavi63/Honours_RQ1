@@ -11,6 +11,8 @@ import torch
 from torch import nn
 from torch.utils.data import DataLoader, Dataset, Subset
 
+from rq1_harness.poisoning import flip_source_labels
+
 
 class SmallMnistCNN(nn.Module):
     """Small common model whose updates are practical to encrypt during pilots."""
@@ -125,6 +127,7 @@ def train_client(
     learning_rate: float,
     seed: int,
     device: torch.device,
+    label_flip: tuple[int, int] | None = None,
 ) -> tuple[Dict[str, np.ndarray], float]:
     local_model = copy.deepcopy(global_model).to(device)
     before = copy.deepcopy(local_model.state_dict())
@@ -143,6 +146,8 @@ def train_client(
     for _ in range(local_epochs):
         for inputs, targets in loader:
             inputs, targets = inputs.to(device), targets.to(device)
+            if label_flip is not None:
+                targets = flip_source_labels(targets, *label_flip)
             optimiser.zero_grad()
             loss = loss_function(local_model(inputs), targets)
             loss.backward()
@@ -150,6 +155,22 @@ def train_client(
             total_loss += float(loss.item()) * inputs.size(0)
             total_samples += inputs.size(0)
     return model_delta(before, local_model.state_dict()), total_loss / total_samples
+
+
+@torch.no_grad()
+def predict(
+    model: nn.Module, dataset: Dataset, batch_size: int, device: torch.device
+) -> tuple[np.ndarray, np.ndarray]:
+    model = model.to(device)
+    model.eval()
+    loader = DataLoader(dataset, batch_size=batch_size, shuffle=False)
+    labels = []
+    predictions = []
+    for inputs, targets in loader:
+        logits = model(inputs.to(device))
+        labels.extend(targets.cpu().numpy().tolist())
+        predictions.extend(logits.argmax(dim=1).cpu().numpy().tolist())
+    return np.asarray(labels), np.asarray(predictions)
 
 
 @torch.no_grad()
