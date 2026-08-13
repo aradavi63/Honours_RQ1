@@ -11,7 +11,7 @@ from rq1_harness.fedshe import (
     load_fedshe_ckks_parameters,
 )
 from rq1_harness.metrics import aggregation_error, targeted_attack_success_rate
-from rq1_harness.membership import membership_metrics
+from rq1_harness.membership import membership_metrics, spatial_temporal_scores
 from rq1_harness.inversion import (
     average_gradients,
     ciphertext_only_result,
@@ -164,6 +164,24 @@ class AggregationTests(unittest.TestCase):
     def test_membership_metrics_reject_empty_scores(self):
         with self.assertRaises(ValueError):
             membership_metrics([], [0.1])
+
+    def test_spatial_temporal_score_uses_target_minus_other_clients(self):
+        rounds = [
+            np.array([[0.8, 0.2, 0.4], [0.3, 0.1, 0.1]]),
+            np.array([[0.6, 0.2, 0.2], [0.5, 0.3, 0.3]]),
+        ]
+        np.testing.assert_allclose(
+            spatial_temporal_scores(rounds, "individual_plaintext"), [0.45, 0.2]
+        )
+        np.testing.assert_allclose(
+            spatial_temporal_scores(rounds, "colluding_clients"), [0.45, 0.2]
+        )
+
+    def test_route_aggregate_score_averages_rounds(self):
+        rounds = [np.array([[0.2], [0.8]]), np.array([[0.6], [0.4]])]
+        np.testing.assert_allclose(
+            spatial_temporal_scores(rounds, "route_aggregate"), [0.4, 0.6]
+        )
 
 
 if __name__ == "__main__":

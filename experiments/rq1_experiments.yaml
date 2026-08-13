@@ -290,9 +290,42 @@ experiments:
       interpretation: Direct individual gradients leaked recognizable sample information in this baseline, whereas larger plaintext aggregates increasingly obscured any one sample. CKKS ciphertext cannot be supplied to this plaintext gradient-matching objective without decryption.
     metrics: [mse, psnr, ssim, label_recovery, applicability]
   e4a_fedmia_update_based:
-    status: observation_adapter_pending
-    implementation: repos/FedMIA
+    status: fedmia_style_multiseed_pilot_completed
+    reference_implementation: repos/FedMIA
+    implementation: rq1_harness/membership.py
+    runner: scripts/run_e4a_matrix.py
     observations: [individual_plaintext, route_aggregate, ciphertext_only, colluding_clients]
+    attack_model: FedMIA-style multi-round target-minus-nontarget gradient-update cosine score.
+    interpretation_constraint: This adapts FedMIA's spatial and temporal cosine measurement to the shared MNIST harness; it is not a reproduction of the paper's full per-sample Gaussian likelihood-ratio selection pipeline.
+    pilot_configuration:
+      dataset: MNIST
+      clients: 5
+      samples_per_client: 100
+      attack_members: 50
+      attack_nonmembers: 50
+      rounds: 5
+      seeds: [1, 2, 3, 4, 5]
+    result_file_pattern: "results/e4a/multiseed/{individual_plaintext,route_aggregate,colluding_clients,ciphertext_only}_seed-{1..5}.csv"
+    completed_result_files: 20
+    individual_plaintext_summary:
+      mean_roc_auc: 0.61976
+      mean_tpr_at_fpr_01: 0.076
+      mean_tpr_at_fpr_001: 0.076
+      mean_membership_advantage: 0.256
+    route_aggregate_summary:
+      mean_roc_auc: 0.5452
+      mean_tpr_at_fpr_01: 0.008
+      mean_tpr_at_fpr_001: 0.008
+      mean_membership_advantage: 0.16
+    colluding_clients_summary:
+      mean_roc_auc: 0.61976
+      mean_tpr_at_fpr_01: 0.076
+      mean_tpr_at_fpr_001: 0.076
+      mean_membership_advantage: 0.256
+      numeric_equality_with_individual_plaintext: true
+    ciphertext_only_summary:
+      applicability: not_applicable_without_decryption_key
+    interpretation: Client-attributed updates leaked more membership information than the final-model E4b baseline. Aggregation weakened target attribution, but colluding clients that reveal every non-target update can recover the target update and restore the individual-update attack. Ciphertext prevents this plaintext cosine measurement while it remains encrypted.
     metrics: [roc_auc, tpr_at_fpr_01, tpr_at_fpr_001, membership_advantage, applicability]
   e4b_blackbox_membership:
     status: multiseed_pilot_completed_all_main_mechanisms

@@ -1,0 +1,2 @@
+observation,dataset,seed,clients,rounds,attack_samples_per_class,applicability,reason,roc_auc,tpr_at_fpr_01,tpr_at_fpr_001,membership_advantage
+ciphertext_only,mnist,1,5,5,50,not_applicable,Per-client gradient-update cosine similarity cannot be computed from CKKS ciphertext without decryption.,nan,nan,nan,nan
