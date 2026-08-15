@@ -1,0 +1,2 @@
+observation,score_method,dataset,seed,clients,rounds,attack_samples_per_class,partition_manifest,applicability,member_score_mean,nonmember_score_mean,roc_auc,tpr_at_fpr_01,tpr_at_fpr_001,membership_advantage
+individual_plaintext,gaussian_cdf,mnist,3,5,5,50,results\partitions\mnist_iid_clients-5_samples-100_seed-3.json,applicable,0.5135359440060183,0.44638602716076753,0.6116,0.0,0.0,0.24

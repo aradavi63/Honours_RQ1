@@ -12,6 +12,7 @@ OBSERVATIONS = ("individual_plaintext", "route_aggregate", "colluding_clients", 
 def main() -> int:
     parser = argparse.ArgumentParser(description="Run the deterministic E4a observation matrix")
     parser.add_argument("--observations", nargs="+", choices=OBSERVATIONS, default=OBSERVATIONS)
+    parser.add_argument("--score-method", choices=("margin", "gaussian_cdf"), default="margin")
     parser.add_argument("--seeds", nargs="+", type=int, default=(1, 2, 3, 4, 5))
     parser.add_argument("--clients", type=int, default=5)
     parser.add_argument("--samples-per-client", type=int, default=100)
@@ -19,16 +20,23 @@ def main() -> int:
     parser.add_argument("--rounds", type=int, default=5)
     parser.add_argument("--overwrite", action="store_true")
     args = parser.parse_args()
+    if args.score_method == "gaussian_cdf" and any(
+        observation not in ("individual_plaintext", "colluding_clients")
+        for observation in args.observations
+    ):
+        parser.error("Gaussian FedMIA scoring requires client-separated plaintext observations")
     output_dir = ROOT / "results" / "e4a" / "multiseed"
     output_dir.mkdir(parents=True, exist_ok=True)
     for observation in args.observations:
         for seed in args.seeds:
-            output = output_dir / f"{observation}_seed-{seed}.csv"
+            prefix = "" if args.score_method == "margin" else f"{args.score_method}_"
+            output = output_dir / f"{prefix}{observation}_seed-{seed}.csv"
             if output.exists() and not args.overwrite:
                 parser.error(f"result already exists: {output.relative_to(ROOT)}")
             command = [
                 sys.executable, str(ROOT / "scripts" / "run_e4a.py"),
                 "--observation", observation,
+                "--score-method", args.score_method,
                 "--dataset", "mnist",
                 "--clients", str(args.clients),
                 "--samples-per-client", str(args.samples_per_client),

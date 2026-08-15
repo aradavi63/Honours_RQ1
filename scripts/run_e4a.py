@@ -13,6 +13,7 @@ sys.path.insert(0, str(ROOT))
 
 from rq1_harness.aggregation import add_to_model, weighted_fedavg
 from rq1_harness.membership import (
+    gaussian_out_cdf_scores,
     membership_metrics,
     per_sample_gradient_cosines,
     spatial_temporal_scores,
@@ -34,6 +35,7 @@ OBSERVATIONS = ("individual_plaintext", "route_aggregate", "colluding_clients", 
 def main() -> int:
     parser = argparse.ArgumentParser(description="Run E4a FedMIA-style update attack")
     parser.add_argument("--observation", choices=OBSERVATIONS, required=True)
+    parser.add_argument("--score-method", choices=("margin", "gaussian_cdf"), default="margin")
     parser.add_argument("--dataset", choices=("synthetic", "mnist"), default="mnist")
     parser.add_argument("--clients", type=int, default=5)
     parser.add_argument("--samples-per-client", type=int, default=100)
@@ -50,6 +52,12 @@ def main() -> int:
         parser.error("client, sample, round and batch values must be positive")
     if args.clients < 2 and args.observation in ("individual_plaintext", "colluding_clients"):
         parser.error("spatial observations require at least two clients")
+    if args.score_method == "gaussian_cdf" and args.observation not in (
+        "individual_plaintext", "colluding_clients"
+    ):
+        parser.error("Gaussian FedMIA scoring requires client-separated plaintext updates")
+    if args.score_method == "gaussian_cdf" and args.clients < 3:
+        parser.error("Gaussian FedMIA scoring requires at least two non-target clients")
     if args.attack_samples > min(args.samples_per_client, 10000):
         parser.error("attack samples exceed the target member or MNIST test pool")
 
@@ -69,6 +77,7 @@ def main() -> int:
     if args.observation == "ciphertext_only":
         row = {
             "observation": args.observation,
+            "score_method": args.score_method,
             "dataset": args.dataset,
             "seed": args.seed,
             "clients": args.clients,
@@ -108,10 +117,15 @@ def main() -> int:
             current = state_to_numpy(model.state_dict())
             model.load_state_dict(numpy_to_state(add_to_model(current, average), model.state_dict()))
 
-        member_scores = spatial_temporal_scores(member_rounds, args.observation)
-        nonmember_scores = spatial_temporal_scores(nonmember_rounds, args.observation)
+        if args.score_method == "gaussian_cdf":
+            member_scores = gaussian_out_cdf_scores(member_rounds)
+            nonmember_scores = gaussian_out_cdf_scores(nonmember_rounds)
+        else:
+            member_scores = spatial_temporal_scores(member_rounds, args.observation)
+            nonmember_scores = spatial_temporal_scores(nonmember_rounds, args.observation)
         row = {
             "observation": args.observation,
+            "score_method": args.score_method,
             "dataset": args.dataset,
             "seed": args.seed,
             "clients": args.clients,

@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import math
 from collections.abc import Mapping, Sequence
 
 import numpy as np
@@ -132,4 +133,25 @@ def spatial_temporal_scores(
         per_round = [values[:, 0] for values in arrays]
     else:
         raise ValueError(f"unsupported plaintext observation: {observation}")
+    return np.stack(per_round, axis=1).mean(axis=1)
+
+
+def gaussian_out_cdf_scores(round_cosines: Sequence[np.ndarray]) -> np.ndarray:
+    """Apply FedMIA's Gaussian non-target-client CDF and average over rounds."""
+    if not round_cosines:
+        raise ValueError("at least one round of cosine measurements is required")
+    arrays = [np.asarray(values, dtype=np.float64) for values in round_cosines]
+    if any(values.ndim != 2 or values.shape != arrays[0].shape for values in arrays):
+        raise ValueError("round cosine matrices must have equal two-dimensional shapes")
+    if arrays[0].shape[1] < 3:
+        raise ValueError("Gaussian out-distribution scoring requires at least two non-target clients")
+    per_round = []
+    for values in arrays:
+        target = values[:, 0]
+        shadows = values[:, 1:]
+        mean_out = shadows.mean(axis=1)
+        variance_out = shadows.var(axis=1) + 1e-8
+        z = (target - mean_out) / np.sqrt(2.0 * variance_out)
+        cdf = 0.5 * (1.0 + np.asarray([math.erf(value) for value in z]))
+        per_round.append(cdf)
     return np.stack(per_round, axis=1).mean(axis=1)

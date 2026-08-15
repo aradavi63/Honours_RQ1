@@ -11,7 +11,11 @@ from rq1_harness.fedshe import (
     load_fedshe_ckks_parameters,
 )
 from rq1_harness.metrics import aggregation_error, targeted_attack_success_rate
-from rq1_harness.membership import membership_metrics, spatial_temporal_scores
+from rq1_harness.membership import (
+    gaussian_out_cdf_scores,
+    membership_metrics,
+    spatial_temporal_scores,
+)
 from rq1_harness.inversion import (
     average_gradients,
     ciphertext_only_result,
@@ -182,6 +186,19 @@ class AggregationTests(unittest.TestCase):
         np.testing.assert_allclose(
             spatial_temporal_scores(rounds, "route_aggregate"), [0.4, 0.6]
         )
+
+    def test_gaussian_out_cdf_scores_target_against_other_clients(self):
+        rounds = [
+            np.array([[0.0, -1.0, 1.0], [2.0, 0.0, 0.0]]),
+            np.array([[0.0, -1.0, 1.0], [2.0, 0.0, 0.0]]),
+        ]
+        scores = gaussian_out_cdf_scores(rounds)
+        self.assertAlmostEqual(scores[0], 0.5)
+        self.assertGreater(scores[1], 0.999)
+
+    def test_gaussian_out_cdf_requires_two_shadow_clients(self):
+        with self.assertRaises(ValueError):
+            gaussian_out_cdf_scores([np.array([[0.5, 0.2]])])
 
 
 if __name__ == "__main__":

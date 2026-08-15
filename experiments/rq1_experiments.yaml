@@ -326,6 +326,21 @@ experiments:
     ciphertext_only_summary:
       applicability: not_applicable_without_decryption_key
     interpretation: Client-attributed updates leaked more membership information than the final-model E4b baseline. Aggregation weakened target attribution, but colluding clients that reveal every non-target update can recover the target update and restore the individual-update attack. Ciphertext prevents this plaintext cosine measurement while it remains encrypted.
+    fedmia_gaussian_extension:
+      status: multiseed_pilot_completed
+      score: Per-round Gaussian CDF of the target-client cosine under the non-target-client out distribution, averaged across rounds.
+      applicable_observations: [individual_plaintext, colluding_clients]
+      limitation: Route aggregates and ciphertext-only observations do not expose the client-separated measurements required to estimate the out distribution.
+      result_file_pattern: "results/e4a/multiseed/gaussian_cdf_{individual_plaintext,colluding_clients}_seed-{1..5}.csv"
+      completed_result_files: 10
+      mean_roc_auc: 0.61328
+      sample_sd_roc_auc: 0.0320504602151046
+      mean_tpr_at_fpr_01: 0.028
+      mean_tpr_at_fpr_001: 0.028
+      mean_membership_advantage: 0.26
+      numeric_equality_colluding_and_individual: true
+      comparison_with_margin_score: The Gaussian CDF produced similar mean AUC but lower low-FPR TPR than the transparent target-minus-nontarget margin. With only four non-target clients, the fitted per-sample out distribution is based on very few observations.
+      interpretation_constraint: This implements the pinned FedMIA code's Gaussian out-CDF scoring stage but still omits its optional outlier or mean-percentage shadow-client selection variants.
     metrics: [roc_auc, tpr_at_fpr_01, tpr_at_fpr_001, membership_advantage, applicability]
   e4b_blackbox_membership:
     status: multiseed_pilot_completed_all_main_mechanisms
