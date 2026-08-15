@@ -341,6 +341,27 @@ experiments:
       numeric_equality_colluding_and_individual: true
       comparison_with_margin_score: The Gaussian CDF produced similar mean AUC but lower low-FPR TPR than the transparent target-minus-nontarget margin. With only four non-target clients, the fitted per-sample out distribution is based on very few observations.
       interpretation_constraint: This implements the pinned FedMIA code's Gaussian out-CDF scoring stage but still omits its optional outlier or mean-percentage shadow-client selection variants.
+      ten_client_robustness:
+        status: completed
+        configuration:
+          clients: 10
+          non_target_clients: 9
+          samples_per_client: 100
+          attack_members: 50
+          attack_nonmembers: 50
+          rounds: 5
+          seeds: [1, 2, 3, 4, 5]
+        margin_result_file_pattern: "results/e4a/multiseed/clients-10_individual_plaintext_seed-{1..5}.csv"
+        gaussian_result_file_pattern: "results/e4a/multiseed/clients-10_gaussian_cdf_individual_plaintext_seed-{1..5}.csv"
+        margin_mean_roc_auc: 0.61504
+        margin_sample_sd_roc_auc: 0.0329879978173881
+        margin_mean_tpr_at_fpr_01: 0.048
+        margin_mean_membership_advantage: 0.252
+        gaussian_mean_roc_auc: 0.61944
+        gaussian_sample_sd_roc_auc: 0.0258280467709039
+        gaussian_mean_tpr_at_fpr_01: 0.028
+        gaussian_mean_membership_advantage: 0.28
+        interpretation: With nine rather than four non-target clients, Gaussian mean AUC increased slightly and across-seed variability decreased, but strict low-FPR performance did not improve. The result does not establish causality because increasing the client count also changes the global training trajectory.
     metrics: [roc_auc, tpr_at_fpr_01, tpr_at_fpr_001, membership_advantage, applicability]
   e4b_blackbox_membership:
     status: multiseed_pilot_completed_all_main_mechanisms

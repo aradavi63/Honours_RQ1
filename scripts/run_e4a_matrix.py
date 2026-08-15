@@ -9,6 +9,13 @@ ROOT = Path(__file__).resolve().parents[1]
 OBSERVATIONS = ("individual_plaintext", "route_aggregate", "colluding_clients", "ciphertext_only")
 
 
+def result_filename(score_method: str, observation: str, seed: int, clients: int) -> str:
+    """Keep the original five-client names while isolating robustness configurations."""
+    score_prefix = "" if score_method == "margin" else f"{score_method}_"
+    client_prefix = "" if clients == 5 else f"clients-{clients}_"
+    return f"{client_prefix}{score_prefix}{observation}_seed-{seed}.csv"
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description="Run the deterministic E4a observation matrix")
     parser.add_argument("--observations", nargs="+", choices=OBSERVATIONS, default=OBSERVATIONS)
@@ -29,8 +36,9 @@ def main() -> int:
     output_dir.mkdir(parents=True, exist_ok=True)
     for observation in args.observations:
         for seed in args.seeds:
-            prefix = "" if args.score_method == "margin" else f"{args.score_method}_"
-            output = output_dir / f"{prefix}{observation}_seed-{seed}.csv"
+            output = output_dir / result_filename(
+                args.score_method, observation, seed, args.clients
+            )
             if output.exists() and not args.overwrite:
                 parser.error(f"result already exists: {output.relative_to(ROOT)}")
             command = [

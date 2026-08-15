@@ -31,9 +31,20 @@ from rq1_harness.poisoning import (
 )
 from rq1_harness.training import iid_partitions, load_or_create_iid_partitions
 from scripts.run_e0_matrix import run_one
+from scripts.run_e4a_matrix import result_filename
 
 
 class AggregationTests(unittest.TestCase):
+    def test_e4a_result_names_separate_client_counts_and_score_methods(self):
+        self.assertEqual(
+            result_filename("margin", "individual_plaintext", 1, 5),
+            "individual_plaintext_seed-1.csv",
+        )
+        self.assertEqual(
+            result_filename("gaussian_cdf", "individual_plaintext", 1, 10),
+            "clients-10_gaussian_cdf_individual_plaintext_seed-1.csv",
+        )
+
     def test_weighted_average(self):
         updates = [{"x": np.array([1.0, 3.0])}, {"x": np.array([3.0, 7.0])}]
         result = weighted_fedavg(updates, [1, 3])
