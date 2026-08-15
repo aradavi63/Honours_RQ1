@@ -326,6 +326,7 @@ experiments:
     ciphertext_only_summary:
       applicability: not_applicable_without_decryption_key
     interpretation: Client-attributed updates leaked more membership information than the final-model E4b baseline. Aggregation weakened target attribution, but colluding clients that reveal every non-target update can recover the target update and restore the individual-update attack. Ciphertext prevents this plaintext cosine measurement while it remains encrypted.
+    nonmember_sampling_caveat: The original exploratory pilot sampled nonmembers randomly. Class-matched controls are the primary analysis because update similarity can otherwise distinguish a target client's label distribution rather than sample membership.
     fedmia_gaussian_extension:
       status: multiseed_pilot_completed
       score: Per-round Gaussian CDF of the target-client cosine under the non-target-client out distribution, averaged across rounds.
@@ -362,6 +363,37 @@ experiments:
         gaussian_mean_tpr_at_fpr_01: 0.028
         gaussian_mean_membership_advantage: 0.28
         interpretation: With nine rather than four non-target clients, Gaussian mean AUC increased slightly and across-seed variability decreased, but strict low-FPR performance did not improve. The result does not establish causality because increasing the client count also changes the global training trajectory.
+    class_matched_partition_robustness:
+      status: completed
+      configuration:
+        clients: 5
+        samples_per_client: 100
+        attack_members: 50
+        class_matched_nonmembers: 50
+        rounds: 5
+        seeds: [1, 2, 3, 4, 5]
+        dirichlet_alpha: 1.0
+      iid_margin_result_pattern: "results/e4a/multiseed/class-matched_individual_plaintext_seed-{1..5}.csv"
+      iid_gaussian_result_pattern: "results/e4a/multiseed/class-matched_gaussian_cdf_individual_plaintext_seed-{1..5}.csv"
+      dirichlet_margin_result_pattern: "results/e4a/multiseed/dirichlet-alpha-1_class-matched_individual_plaintext_seed-{1..5}.csv"
+      dirichlet_gaussian_result_pattern: "results/e4a/multiseed/dirichlet-alpha-1_class-matched_gaussian_cdf_individual_plaintext_seed-{1..5}.csv"
+      iid_margin_mean_roc_auc: 0.56928
+      iid_margin_sample_sd_roc_auc: 0.0268050741465119
+      iid_margin_mean_tpr_at_fpr_01: 0.064
+      iid_margin_mean_membership_advantage: 0.18
+      iid_gaussian_mean_roc_auc: 0.57296
+      iid_gaussian_sample_sd_roc_auc: 0.0277425305262516
+      iid_gaussian_mean_tpr_at_fpr_01: 0.036
+      iid_gaussian_mean_membership_advantage: 0.192
+      dirichlet_margin_mean_roc_auc: 0.53968
+      dirichlet_margin_sample_sd_roc_auc: 0.0281657948583029
+      dirichlet_margin_mean_tpr_at_fpr_01: 0.016
+      dirichlet_margin_mean_membership_advantage: 0.144
+      dirichlet_gaussian_mean_roc_auc: 0.53672
+      dirichlet_gaussian_sample_sd_roc_auc: 0.0103899951876794
+      dirichlet_gaussian_mean_tpr_at_fpr_01: 0.04
+      dirichlet_gaussian_mean_membership_advantage: 0.132
+      interpretation: Once nonmembers have exactly the target-member label histogram, Dirichlet heterogeneity moves both update attacks closer to chance. Unmatched nonmembers produced spuriously high AUC because the score exposed client class composition as well as membership.
     metrics: [roc_auc, tpr_at_fpr_01, tpr_at_fpr_001, membership_advantage, applicability]
   e4b_blackbox_membership:
     status: multiseed_pilot_completed_all_main_mechanisms

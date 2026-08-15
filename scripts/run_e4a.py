@@ -21,6 +21,9 @@ from rq1_harness.membership import (
 )
 from rq1_harness.training import (
     SmallMnistCNN,
+    class_matched_indices,
+    dataset_labels,
+    load_or_create_dirichlet_partitions,
     load_or_create_iid_partitions,
     numpy_to_state,
     seed_everything,
@@ -37,6 +40,11 @@ def main() -> int:
     parser.add_argument("--observation", choices=OBSERVATIONS, required=True)
     parser.add_argument("--score-method", choices=("margin", "gaussian_cdf"), default="margin")
     parser.add_argument("--dataset", choices=("synthetic", "mnist"), default="mnist")
+    parser.add_argument("--partitioning", choices=("iid", "dirichlet"), default="iid")
+    parser.add_argument("--dirichlet-alpha", type=float, default=1.0)
+    parser.add_argument(
+        "--nonmember-sampling", choices=("random", "class_matched"), default="random"
+    )
     parser.add_argument("--clients", type=int, default=5)
     parser.add_argument("--samples-per-client", type=int, default=100)
     parser.add_argument("--attack-samples", type=int, default=50)
@@ -60,29 +68,52 @@ def main() -> int:
         parser.error("Gaussian FedMIA scoring requires at least two non-target clients")
     if args.attack_samples > min(args.samples_per_client, 10000):
         parser.error("attack samples exceed the target member or MNIST test pool")
+    if args.dirichlet_alpha <= 0:
+        parser.error("Dirichlet alpha must be positive")
 
     seed_everything(args.seed)
     device = torch.device("cpu")
     train_data, test_data = load_data(args.dataset, args.data_root, args.seed)
-    manifest = (args.partition_manifest or ROOT / "results" / "partitions" / (
-        f"{args.dataset}_iid_clients-{args.clients}_samples-{args.samples_per_client}_seed-{args.seed}.json"
-    )).resolve()
-    partitions = load_or_create_iid_partitions(
-        manifest, args.dataset, len(train_data), args.clients, args.samples_per_client, args.seed
+    partition_label = "iid" if args.partitioning == "iid" else (
+        f"dirichlet-alpha-{args.dirichlet_alpha:g}".replace(".", "p")
     )
+    manifest = (args.partition_manifest or ROOT / "results" / "partitions" / (
+        f"{args.dataset}_{partition_label}_clients-{args.clients}_samples-{args.samples_per_client}_seed-{args.seed}.json"
+    )).resolve()
+    if args.partitioning == "iid":
+        partitions = load_or_create_iid_partitions(
+            manifest, args.dataset, len(train_data), args.clients, args.samples_per_client, args.seed
+        )
+    else:
+        partitions = load_or_create_dirichlet_partitions(
+            manifest, args.dataset, dataset_labels(train_data), args.clients,
+            args.samples_per_client, args.dirichlet_alpha, args.seed,
+        )
     rng = np.random.default_rng(args.seed + 41000)
     member_indices = rng.choice(partitions[0], args.attack_samples, replace=False).tolist()
-    nonmember_indices = rng.choice(len(test_data), args.attack_samples, replace=False).tolist()
+    if args.nonmember_sampling == "class_matched":
+        train_labels = dataset_labels(train_data)
+        test_labels = dataset_labels(test_data)
+        nonmember_indices = class_matched_indices(
+            train_labels[member_indices], test_labels, args.seed + 42000
+        )
+    else:
+        nonmember_indices = rng.choice(
+            len(test_data), args.attack_samples, replace=False
+        ).tolist()
 
     if args.observation == "ciphertext_only":
         row = {
             "observation": args.observation,
             "score_method": args.score_method,
             "dataset": args.dataset,
+            "partitioning": args.partitioning,
+            "dirichlet_alpha": args.dirichlet_alpha if args.partitioning == "dirichlet" else None,
             "seed": args.seed,
             "clients": args.clients,
             "rounds": args.rounds,
             "attack_samples_per_class": args.attack_samples,
+            "nonmember_sampling": args.nonmember_sampling,
             "applicability": "not_applicable",
             "reason": "Per-client gradient-update cosine similarity cannot be computed from CKKS ciphertext without decryption.",
             "roc_auc": np.nan,
@@ -127,10 +158,13 @@ def main() -> int:
             "observation": args.observation,
             "score_method": args.score_method,
             "dataset": args.dataset,
+            "partitioning": args.partitioning,
+            "dirichlet_alpha": args.dirichlet_alpha if args.partitioning == "dirichlet" else None,
             "seed": args.seed,
             "clients": args.clients,
             "rounds": args.rounds,
             "attack_samples_per_class": args.attack_samples,
+            "nonmember_sampling": args.nonmember_sampling,
             "partition_manifest": str(manifest.relative_to(ROOT)),
             "applicability": "applicable",
             "member_score_mean": float(member_scores.mean()),

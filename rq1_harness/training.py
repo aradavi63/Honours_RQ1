@@ -9,7 +9,7 @@ from typing import Dict, Sequence
 import numpy as np
 import torch
 from torch import nn
-from torch.utils.data import DataLoader, Dataset, Subset
+from torch.utils.data import DataLoader, Dataset, Subset, TensorDataset
 
 from rq1_harness.poisoning import flip_source_labels
 
@@ -57,6 +57,83 @@ def iid_partitions(
     ]
 
 
+def dataset_labels(dataset: Dataset) -> np.ndarray:
+    """Read integer labels without applying image transforms."""
+    if hasattr(dataset, "targets"):
+        values = getattr(dataset, "targets")
+    elif isinstance(dataset, TensorDataset) and len(dataset.tensors) >= 2:
+        values = dataset.tensors[1]
+    else:
+        values = [dataset[index][1] for index in range(len(dataset))]
+    if isinstance(values, torch.Tensor):
+        values = values.detach().cpu().numpy()
+    labels = np.asarray(values, dtype=np.int64)
+    if labels.ndim != 1 or len(labels) != len(dataset):
+        raise ValueError("dataset labels must be a one-dimensional value per sample")
+    return labels
+
+
+def class_matched_indices(
+    reference_labels: Sequence[int], candidate_labels: Sequence[int], seed: int
+) -> list[int]:
+    """Sample candidate indices with exactly the reference label histogram."""
+    reference = np.asarray(reference_labels, dtype=np.int64)
+    candidates = np.asarray(candidate_labels, dtype=np.int64)
+    if reference.ndim != 1 or candidates.ndim != 1 or not len(reference):
+        raise ValueError("reference and candidate labels must be non-empty vectors")
+    rng = np.random.default_rng(seed)
+    selected = []
+    for label, count in zip(*np.unique(reference, return_counts=True)):
+        pool = np.flatnonzero(candidates == label)
+        if count > len(pool):
+            raise ValueError(f"not enough candidate samples for label {label}")
+        selected.extend(rng.choice(pool, int(count), replace=False).astype(int).tolist())
+    rng.shuffle(selected)
+    return selected
+
+
+def dirichlet_partitions(
+    labels: Sequence[int],
+    client_count: int,
+    samples_per_client: int,
+    alpha: float,
+    seed: int,
+) -> list[list[int]]:
+    """Create disjoint, equal-sized clients with Dirichlet-skewed class choices."""
+    labels = np.asarray(labels, dtype=np.int64)
+    required = client_count * samples_per_client
+    if min(client_count, samples_per_client) < 1 or alpha <= 0:
+        raise ValueError("client count, sample count and alpha must be positive")
+    if required > len(labels):
+        raise ValueError(f"requested {required} client samples from {len(labels)} labels")
+    classes = np.unique(labels)
+    rng = np.random.default_rng(seed)
+    pools = {}
+    positions = {}
+    for label in classes:
+        indices = np.flatnonzero(labels == label)
+        rng.shuffle(indices)
+        pools[int(label)] = indices
+        positions[int(label)] = 0
+    preferences = rng.dirichlet(np.full(len(classes), alpha), size=client_count)
+    partitions = [[] for _ in range(client_count)]
+    for _ in range(samples_per_client):
+        for client in rng.permutation(client_count):
+            available = np.asarray(
+                [positions[int(label)] < len(pools[int(label)]) for label in classes],
+                dtype=np.float64,
+            )
+            probabilities = preferences[client] * available
+            if not probabilities.sum():
+                raise ValueError("not enough class samples to satisfy client quotas")
+            probabilities /= probabilities.sum()
+            selected_class = int(rng.choice(classes, p=probabilities))
+            position = positions[selected_class]
+            partitions[client].append(int(pools[selected_class][position]))
+            positions[selected_class] += 1
+    return partitions
+
+
 def load_or_create_iid_partitions(
     path: Path,
     dataset_name: str,
@@ -89,6 +166,47 @@ def load_or_create_iid_partitions(
 
     partitions = iid_partitions(
         dataset_size, client_count, samples_per_client, seed
+    )
+    path.parent.mkdir(parents=True, exist_ok=True)
+    with path.open("w", encoding="utf-8") as stream:
+        json.dump({**expected, "partitions": partitions}, stream, indent=2)
+    return partitions
+
+
+def load_or_create_dirichlet_partitions(
+    path: Path,
+    dataset_name: str,
+    labels: Sequence[int],
+    client_count: int,
+    samples_per_client: int,
+    alpha: float,
+    seed: int,
+) -> list[list[int]]:
+    """Persist and strictly validate a reproducible non-IID partition manifest."""
+    expected = {
+        "schema_version": 1,
+        "dataset": dataset_name,
+        "dataset_size": len(labels),
+        "partitioning": "dirichlet",
+        "dirichlet_alpha": float(alpha),
+        "client_count": client_count,
+        "samples_per_client": samples_per_client,
+        "seed": seed,
+    }
+    if path.exists():
+        with path.open("r", encoding="utf-8") as stream:
+            document = json.load(stream)
+        for key, value in expected.items():
+            if document.get(key) != value:
+                raise ValueError(
+                    f"partition manifest {path} has {key}={document.get(key)!r}; expected {value!r}"
+                )
+        partitions = document.get("partitions")
+        if not isinstance(partitions, list) or len(partitions) != client_count:
+            raise ValueError(f"partition manifest {path} has invalid partitions")
+        return [[int(index) for index in client] for client in partitions]
+    partitions = dirichlet_partitions(
+        labels, client_count, samples_per_client, alpha, seed
     )
     path.parent.mkdir(parents=True, exist_ok=True)
     with path.open("w", encoding="utf-8") as stream:

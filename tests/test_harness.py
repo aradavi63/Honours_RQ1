@@ -29,7 +29,12 @@ from rq1_harness.poisoning import (
     flip_source_labels,
     select_malicious_clients,
 )
-from rq1_harness.training import iid_partitions, load_or_create_iid_partitions
+from rq1_harness.training import (
+    class_matched_indices,
+    dirichlet_partitions,
+    iid_partitions,
+    load_or_create_iid_partitions,
+)
 from scripts.run_e0_matrix import run_one
 from scripts.run_e4a_matrix import result_filename
 
@@ -44,6 +49,38 @@ class AggregationTests(unittest.TestCase):
             result_filename("gaussian_cdf", "individual_plaintext", 1, 10),
             "clients-10_gaussian_cdf_individual_plaintext_seed-1.csv",
         )
+        self.assertEqual(
+            result_filename("margin", "individual_plaintext", 1, 5, "dirichlet", 1.0),
+            "dirichlet-alpha-1_individual_plaintext_seed-1.csv",
+        )
+        self.assertEqual(
+            result_filename(
+                "margin", "individual_plaintext", 1, 5, "dirichlet", 1.0,
+                "class_matched",
+            ),
+            "dirichlet-alpha-1_class-matched_individual_plaintext_seed-1.csv",
+        )
+
+    def test_dirichlet_partitions_are_reproducible_disjoint_and_balanced(self):
+        labels = np.repeat(np.arange(4), 50)
+        first = dirichlet_partitions(labels, 5, 20, alpha=0.5, seed=3)
+        second = dirichlet_partitions(labels, 5, 20, alpha=0.5, seed=3)
+        self.assertEqual(first, second)
+        self.assertTrue(all(len(client) == 20 for client in first))
+        flattened = [index for client in first for index in client]
+        self.assertEqual(len(flattened), len(set(flattened)))
+        histograms = [tuple(np.bincount(labels[client], minlength=4)) for client in first]
+        self.assertGreater(len(set(histograms)), 1)
+
+    def test_class_matched_indices_reproduce_reference_histogram(self):
+        reference = np.array([0, 0, 1, 3, 3, 3])
+        candidates = np.repeat(np.arange(4), 10)
+        selected = class_matched_indices(reference, candidates, seed=4)
+        np.testing.assert_array_equal(
+            np.bincount(candidates[selected], minlength=4),
+            np.bincount(reference, minlength=4),
+        )
+        self.assertEqual(len(selected), len(set(selected)))
 
     def test_weighted_average(self):
         updates = [{"x": np.array([1.0, 3.0])}, {"x": np.array([3.0, 7.0])}]
