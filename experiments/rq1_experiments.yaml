@@ -249,6 +249,32 @@ experiments:
       mean_relative_l2_error: 0.07594989477251139
       max_relative_l2_error: 0.11742626039639656
       interpretation: FedSHE rounding perturbs individual outcomes slightly but preserves the finding that early model formation is substantially more vulnerable than late rounds.
+    non_iid_robustness:
+      status: completed_plaintext_multiseed
+      partitioning: dirichlet
+      dirichlet_alpha: 1.0
+      clients: 10
+      samples_per_client: 100
+      rounds: 5
+      seeds: [1, 2, 3, 4, 5]
+      attack_schedule: all_rounds
+      result_file_pattern: "results/e2/multiseed/dirichlet-alpha-1_plaintext_all_rounds_fraction-{0,0p1,0p2}_seed-{1..5}.csv"
+      partition_manifest_pattern: "results/partitions/mnist_dirichlet-alpha-1_clients-10_samples-100_seed-{1..5}.json"
+      clean_final_accuracy_mean: 0.73226
+      clean_final_accuracy_sample_sd: 0.048283
+      fraction_0p1_final_accuracy_mean: 0.73196
+      fraction_0p1_paired_accuracy_delta: -0.00030
+      fraction_0p1_excess_peak_asr_mean: 0.05779735682819383
+      fraction_0p1_excess_peak_asr_sample_sd: 0.12825603650010875
+      fraction_0p1_final_asr_paired_delta_mean: 0.00616740088105726
+      fraction_0p1_malicious_source_samples_by_seed: [2, 0, 1, 0, 19]
+      fraction_0p2_final_accuracy_mean: 0.71694
+      fraction_0p2_paired_accuracy_delta: -0.01532
+      fraction_0p2_excess_peak_asr_mean: 0.25162995594713655
+      fraction_0p2_excess_peak_asr_sample_sd: 0.24903126950605006
+      fraction_0p2_final_asr_paired_delta_mean: 0.0505726872246696
+      fraction_0p2_malicious_source_samples_by_seed: [6, 25, 11, 15, 29]
+      interpretation: Under non-IID partitions, malicious-client fraction is not a fixed poisoning dose because selected clients hold different numbers of source-label samples. Ten percent malicious clients often produced no meaningful attack, while twenty percent increased excess peak ASR but remained highly seed-sensitive. Effective source-label exposure must therefore accompany nominal malicious fraction.
     metrics: [test_accuracy, source_recall, targeted_attack_success_rate, unaffected_macro_recall]
   e3_gradient_inversion:
     status: baseline_multiseed_pilot_completed

@@ -36,10 +36,23 @@ from rq1_harness.training import (
     load_or_create_iid_partitions,
 )
 from scripts.run_e0_matrix import run_one
+from scripts.run_e2_matrix import result_filename as e2_result_filename
 from scripts.run_e4a_matrix import result_filename
 
 
 class AggregationTests(unittest.TestCase):
+    def test_e2_result_names_isolate_non_iid_runs(self):
+        self.assertEqual(
+            e2_result_filename("plaintext", "all_rounds", 0.2, 1),
+            "plaintext_all_rounds_fraction-0p2_seed-1.csv",
+        )
+        self.assertEqual(
+            e2_result_filename(
+                "plaintext", "all_rounds", 0.2, 1, "dirichlet", 1.0,
+            ),
+            "dirichlet-alpha-1_plaintext_all_rounds_fraction-0p2_seed-1.csv",
+        )
+
     def test_e4a_result_names_separate_client_counts_and_score_methods(self):
         self.assertEqual(
             result_filename("margin", "individual_plaintext", 1, 5),
