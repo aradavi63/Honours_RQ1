@@ -1,0 +1,41 @@
+{
+  "status": "reference_smoke_completed",
+  "reference_repo": "repos/server-initiated_HE_FL",
+  "reference_commit": "80575b5ff813fb2b4ba1a7786576ca65bf5d3303",
+  "reference_source_modified": false,
+  "mode": "he",
+  "gui": false,
+  "headless_adapter": true,
+  "run_label": "scenario-pilot",
+  "scale_note": "Reference scenario pilot; not a full 20-round result.",
+  "seed_injected_by_wrapper": 2,
+  "determinism_note": "The original client threads share process-level random state; repeated runs may differ despite wrapper seeding.",
+  "configuration": {
+    "dataset": "MNIST",
+    "model": "reference Mnistcnn",
+    "clients": 10,
+    "samples_per_client": 100,
+    "rounds": 1,
+    "local_epochs": 1,
+    "batch_size": 12,
+    "dirichlet_alpha": 1.0,
+    "partition_size": 10
+  },
+  "environment": {
+    "python_executable": "C:\\Users\\Adam\\anaconda3\\envs\\rq1-lee-he\\python.exe",
+    "python_version": "3.9.23",
+    "torch_version": "2.3.0+cpu",
+    "platform": "Windows-10-10.0.22631-SP0"
+  },
+  "result": {
+    "final_accuracy_percent": 85.86,
+    "final_mean_client_loss": 0.8098592555453614
+  },
+  "native_files": [
+    ".lee-reference-he_scenario-pilot_seed-2_scores.csv",
+    ".lee-reference-he_scenario-pilot_seed-2_sizes.csv",
+    ".lee-reference-he_scenario-pilot_seed-2_times.csv",
+    ".lee-reference-he_scenario-pilot_seed-2_transmissions.csv"
+  ],
+  "native_result_directory": "results\\reference\\lee\\he_scenario-pilot_seed-2"
+}

@@ -1,0 +1,91 @@
+{
+  "run_label": "scenario-pilot",
+  "seeds": [
+    1,
+    2,
+    3
+  ],
+  "interpretation_limit": "Three one-round pilot seeds estimate variability but are not a thesis-scale statistical comparison.",
+  "paired_results": [
+    {
+      "seed": 1,
+      "standard_accuracy_percent": 91.78,
+      "he_accuracy_percent": 91.08,
+      "accuracy_difference_standard_minus_he_points": 0.7,
+      "standard_total_time_seconds": 95.05999803543091,
+      "he_total_time_seconds": 261.88598370552063,
+      "runtime_ratio_he_over_standard": 2.754955,
+      "standard_transmissions": 20,
+      "he_transmissions": 130,
+      "transmission_ratio_he_over_standard": 6.5
+    },
+    {
+      "seed": 2,
+      "standard_accuracy_percent": 86.99,
+      "he_accuracy_percent": 85.86,
+      "accuracy_difference_standard_minus_he_points": 1.13,
+      "standard_total_time_seconds": 100.66483521461487,
+      "he_total_time_seconds": 401.3426716327667,
+      "runtime_ratio_he_over_standard": 3.98692,
+      "standard_transmissions": 20,
+      "he_transmissions": 130,
+      "transmission_ratio_he_over_standard": 6.5
+    },
+    {
+      "seed": 3,
+      "standard_accuracy_percent": 92.7,
+      "he_accuracy_percent": 92.51,
+      "accuracy_difference_standard_minus_he_points": 0.19,
+      "standard_total_time_seconds": 98.7269549369812,
+      "he_total_time_seconds": 397.1014177799225,
+      "runtime_ratio_he_over_standard": 4.022219,
+      "standard_transmissions": 20,
+      "he_transmissions": 130,
+      "transmission_ratio_he_over_standard": 6.5
+    }
+  ],
+  "aggregate": {
+    "standard_accuracy_percent": {
+      "mean": 90.49,
+      "sample_standard_deviation": 3.065795,
+      "minimum": 86.99,
+      "maximum": 92.7
+    },
+    "he_accuracy_percent": {
+      "mean": 89.816667,
+      "sample_standard_deviation": 3.500376,
+      "minimum": 85.86,
+      "maximum": 92.51
+    },
+    "accuracy_difference_standard_minus_he_points": {
+      "mean": 0.673333,
+      "sample_standard_deviation": 0.470567,
+      "minimum": 0.19,
+      "maximum": 1.13
+    },
+    "standard_total_time_seconds": {
+      "mean": 98.150596,
+      "sample_standard_deviation": 2.846523,
+      "minimum": 95.059998,
+      "maximum": 100.664835
+    },
+    "he_total_time_seconds": {
+      "mean": 353.443358,
+      "sample_standard_deviation": 79.319365,
+      "minimum": 261.885984,
+      "maximum": 401.342672
+    },
+    "runtime_ratio_he_over_standard": {
+      "mean": 3.588031,
+      "sample_standard_deviation": 0.721681,
+      "minimum": 2.754955,
+      "maximum": 4.022219
+    },
+    "transmission_ratio_he_over_standard": {
+      "mean": 6.5,
+      "sample_standard_deviation": 0.0,
+      "minimum": 6.5,
+      "maximum": 6.5
+    }
+  }
+}
