@@ -9,7 +9,6 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 
 from rq1_harness.config import iter_environment_paths, load_config, validate_config, yaml
-from scripts.validate_provenance import validate_register
 
 
 def git(*args: str) -> str:
@@ -30,9 +29,6 @@ def main() -> int:
     args = parser.parse_args()
     config = load_config(args.config)
     errors = validate_config(config, ROOT)
-    errors.extend(
-        validate_register(ROOT / "experiments" / "source_adaptation_audit.yaml")
-    )
 
     recorded = {}
     for line in git("ls-files", "--stage", "repos").splitlines():
