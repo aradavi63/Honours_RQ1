@@ -1,0 +1,53 @@
+{
+  "run_label": "convergence-pilot",
+  "seed": 1,
+  "rounds": 3,
+  "interpretation_limit": "One three-round paired pilot demonstrates execution and convergence; it does not estimate cross-seed uncertainty or reproduce the full 20-round, five-local-epoch reference configuration.",
+  "native_timing_note": "Lee repeats the whole-run total_time in every round row; this summary uses that repeated value once and does not sum it.",
+  "trajectory": [
+    {
+      "round": 1,
+      "standard_accuracy_percent": 91.66,
+      "he_accuracy_percent": 92.02,
+      "accuracy_difference_standard_minus_he_points": -0.36,
+      "standard_mean_client_loss": 0.8210555240880566,
+      "he_mean_client_loss": 0.8269649295003308,
+      "standard_epoch_time_seconds": 96.5123827457428,
+      "he_epoch_time_seconds": 298.3606114387512,
+      "standard_transmissions": 20,
+      "he_transmissions": 130
+    },
+    {
+      "round": 2,
+      "standard_accuracy_percent": 95.53,
+      "he_accuracy_percent": 95.43,
+      "accuracy_difference_standard_minus_he_points": 0.1,
+      "standard_mean_client_loss": 0.2347119356515092,
+      "he_mean_client_loss": 0.23185684688995828,
+      "standard_epoch_time_seconds": 99.52275371551514,
+      "he_epoch_time_seconds": 348.70894503593445,
+      "standard_transmissions": 20,
+      "he_transmissions": 130
+    },
+    {
+      "round": 3,
+      "standard_accuracy_percent": 96.86,
+      "he_accuracy_percent": 97.05,
+      "accuracy_difference_standard_minus_he_points": -0.19,
+      "standard_mean_client_loss": 0.14182294099045778,
+      "he_mean_client_loss": 0.14321143179726922,
+      "standard_epoch_time_seconds": 107.2136640548706,
+      "he_epoch_time_seconds": 292.7173364162445,
+      "standard_transmissions": 20,
+      "he_transmissions": 130
+    }
+  ],
+  "whole_run": {
+    "standard_total_time_seconds": 303.49705815315247,
+    "he_total_time_seconds": 940.2322714328766,
+    "runtime_ratio_he_over_standard": 3.097995,
+    "standard_transmissions": 60,
+    "he_transmissions": 390,
+    "transmission_ratio_he_over_standard": 6.5
+  }
+}

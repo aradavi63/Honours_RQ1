@@ -263,7 +263,7 @@ def main() -> int:
     if not score_rows:
         raise RuntimeError("Lee's native score CSV is empty")
     metadata = {
-        "status": "reference_smoke_completed",
+        "status": "reference_run_completed",
         "reference_repo": "repos/server-initiated_HE_FL",
         "reference_commit": commit,
         "reference_source_modified": False,
