@@ -38,9 +38,18 @@ from rq1_harness.training import (
 from scripts.run_e0_matrix import run_one
 from scripts.run_e2_matrix import result_filename as e2_result_filename
 from scripts.run_e4a_matrix import result_filename
+from scripts.validate_provenance import validate_register
 
 
 class AggregationTests(unittest.TestCase):
+    def test_source_adaptation_audit_matches_repository(self):
+        self.assertEqual(
+            validate_register(
+                Path("experiments/source_adaptation_audit.yaml").resolve()
+            ),
+            [],
+        )
+
     def test_e2_result_names_isolate_non_iid_runs(self):
         self.assertEqual(
             e2_result_filename("plaintext", "all_rounds", 0.2, 1),
