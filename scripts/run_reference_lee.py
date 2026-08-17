@@ -4,6 +4,7 @@ import argparse
 import csv
 import importlib
 import importlib.util
+import importlib.metadata
 import json
 import os
 import platform
@@ -23,6 +24,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import torch
 import certifi
+import psutil
 from matplotlib.backends.backend_agg import FigureCanvasAgg
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -114,6 +116,18 @@ def reference_args(cli: argparse.Namespace, temporary_output: str) -> SimpleName
         gpu=-1,
         all_clients=True,
         device=torch.device("cpu"),
+    )
+
+
+def is_thesis_baseline(args: argparse.Namespace) -> bool:
+    return (
+        args.clients == 10
+        and args.samples_per_client == 100
+        and args.rounds == 20
+        and args.local_epochs == 5
+        and args.batch_size == 12
+        and args.alpha == 1.0
+        and args.partition_size == 10
     )
 
 
@@ -272,9 +286,19 @@ def main() -> int:
         "headless_adapter": not args.gui,
         "run_label": args.run_label,
         "scale_note": (
-            "Reduced smoke configuration; not a thesis/paper-scale result."
-            if args.run_label == "smoke"
-            else "Reference scenario pilot; not a full 20-round result."
+            "Matches the MNIST baseline configuration reported in Lee's thesis."
+            if is_thesis_baseline(args)
+            else (
+                "Reduced smoke configuration; not a thesis/paper-scale result."
+                if args.run_label == "smoke"
+                else "Reference scenario pilot; not a full 20-round result."
+            )
+        ),
+        "configuration_basis": (
+            "Lee thesis Section 7.2 and Figures 3-6; num_samples, batch size, "
+            "learning rate and momentum use the pinned repository defaults."
+            if is_thesis_baseline(args)
+            else "User-selected reference reproduction configuration."
         ),
         "seed_injected_by_wrapper": args.seed,
         "determinism_note": (
@@ -296,7 +320,14 @@ def main() -> int:
             "python_executable": sys.executable,
             "python_version": platform.python_version(),
             "torch_version": torch.__version__,
+            "torchvision_version": importlib.metadata.version("torchvision"),
+            "tenseal_version": importlib.metadata.version("tenseal"),
+            "numpy_version": np.__version__,
             "platform": platform.platform(),
+            "processor": platform.processor(),
+            "physical_cpu_cores": psutil.cpu_count(logical=False),
+            "logical_cpu_cores": psutil.cpu_count(logical=True),
+            "physical_memory_gib": round(psutil.virtual_memory().total / 1024**3, 2),
         },
         "result": {
             "final_accuracy_percent": float(score_rows[-1]["acc_score"]),
