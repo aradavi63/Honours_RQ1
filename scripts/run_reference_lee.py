@@ -8,6 +8,7 @@ import json
 import os
 import platform
 import random
+import re
 import shutil
 import ssl
 import subprocess
@@ -187,6 +188,11 @@ def main() -> int:
     parser.add_argument("--alpha", type=float, default=1.0)
     parser.add_argument("--partition-size", type=int, default=2)
     parser.add_argument(
+        "--run-label",
+        default="smoke",
+        help="filename-safe label distinguishing reference configurations",
+    )
+    parser.add_argument(
         "--output-dir",
         type=Path,
         default=ROOT / "results" / "reference" / "lee",
@@ -207,6 +213,8 @@ def main() -> int:
         parser.error("Lee's route builder requires clients divisible by partition size")
     if args.alpha <= 0:
         parser.error("alpha must be positive")
+    if not re.fullmatch(r"[a-z0-9][a-z0-9-]*", args.run_label):
+        parser.error("run label must contain only lowercase letters, numbers and hyphens")
     commit = reference_commit()
     if commit != EXPECTED_COMMIT:
         parser.error(f"expected Lee commit {EXPECTED_COMMIT}, found {commit}")
@@ -218,7 +226,7 @@ def main() -> int:
     np.random.seed(args.seed)
     torch.manual_seed(args.seed)
     args.output_dir = args.output_dir.resolve()
-    stem = f"{args.mode}_smoke_seed-{args.seed}"
+    stem = f"{args.mode}_{args.run_label}_seed-{args.seed}"
     temporary_name = f".lee-reference-{stem}"
     temporary_output = ROOT / temporary_name
     if temporary_output.exists():
@@ -262,7 +270,12 @@ def main() -> int:
         "mode": args.mode,
         "gui": args.gui,
         "headless_adapter": not args.gui,
-        "scale_note": "Reduced smoke configuration; not a thesis/paper-scale result.",
+        "run_label": args.run_label,
+        "scale_note": (
+            "Reduced smoke configuration; not a thesis/paper-scale result."
+            if args.run_label == "smoke"
+            else "Reference scenario pilot; not a full 20-round result."
+        ),
         "seed_injected_by_wrapper": args.seed,
         "determinism_note": (
             "The original client threads share process-level random state; repeated "
