@@ -1,0 +1,40 @@
+{
+  "status": "reference_smoke_completed",
+  "reference_repo": "repos/server-initiated_HE_FL",
+  "reference_commit": "80575b5ff813fb2b4ba1a7786576ca65bf5d3303",
+  "reference_source_modified": false,
+  "mode": "he",
+  "gui": false,
+  "headless_adapter": true,
+  "scale_note": "Reduced smoke configuration; not a thesis/paper-scale result.",
+  "seed_injected_by_wrapper": 1,
+  "determinism_note": "The original client threads share process-level random state; repeated runs may differ despite wrapper seeding.",
+  "configuration": {
+    "dataset": "MNIST",
+    "model": "reference Mnistcnn",
+    "clients": 2,
+    "samples_per_client": 20,
+    "rounds": 1,
+    "local_epochs": 1,
+    "batch_size": 12,
+    "dirichlet_alpha": 1.0,
+    "partition_size": 2
+  },
+  "environment": {
+    "python_executable": "C:\\Users\\Adam\\anaconda3\\envs\\rq1-lee-he\\python.exe",
+    "python_version": "3.9.23",
+    "torch_version": "2.3.0+cpu",
+    "platform": "Windows-10-10.0.22631-SP0"
+  },
+  "result": {
+    "final_accuracy_percent": 81.75,
+    "final_mean_client_loss": 0.2858905004539004
+  },
+  "native_files": [
+    ".lee-reference-he_smoke_seed-1_scores.csv",
+    ".lee-reference-he_smoke_seed-1_sizes.csv",
+    ".lee-reference-he_smoke_seed-1_times.csv",
+    ".lee-reference-he_smoke_seed-1_transmissions.csv"
+  ],
+  "native_result_directory": "results\\reference\\lee\\he_smoke_seed-1"
+}
