@@ -3,7 +3,10 @@
 from __future__ import annotations
 
 import argparse
+import contextlib
+import ctypes
 import json
+import os
 import subprocess
 import sys
 from pathlib import Path
@@ -23,6 +26,23 @@ CONFIGURATION = {
     "alpha": 1.0,
     "partition_size": 10,
 }
+
+
+@contextlib.contextmanager
+def keep_system_awake():
+    """Prevent Windows idle sleep while preserving normal display power saving."""
+    if os.name != "nt":
+        yield False
+        return
+    execution_state = ctypes.windll.kernel32.SetThreadExecutionState
+    es_continuous = 0x80000000
+    es_system_required = 0x00000001
+    if not execution_state(es_continuous | es_system_required):
+        raise RuntimeError("Windows refused the keep-awake execution state")
+    try:
+        yield True
+    finally:
+        execution_state(es_continuous)
 
 
 def command(mode: str, seed: int) -> list[str]:
@@ -85,8 +105,10 @@ def main() -> int:
     if not args.execute:
         print("Dry run only. Add --execute to start the long-running experiment.")
         return 0
-    for mode in modes:
-        subprocess.run(command(mode, args.seed), cwd=ROOT, check=True)
+    with keep_system_awake() as active:
+        print(f"System keep-awake active: {active}")
+        for mode in modes:
+            subprocess.run(command(mode, args.seed), cwd=ROOT, check=True)
     return 0
 
 
