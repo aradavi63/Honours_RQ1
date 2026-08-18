@@ -1,0 +1,293 @@
+cpu
+args:  Namespace(mode='Plain', phe_key_len=2048, ckks_sec_level='128', ckks_mul_depth='0', ckks_key_len='1024', dataset='mnist', model='LeNet', epochs=10, num_users=10, local_ep=10, local_bs=64, bs=64, lr=0.015, momentum=0.9, split='user', num_classes=10, num_channels=1, gpu=-1, no_plot=True, device=device(type='cpu'))
+load dataset...
+clients and server initialization...
+start training...
+Homomorphic Encryption Scheme: [31mPlain[0m
+start time():  [32m1787045455.0874305[0m
+client train time: 52.21615695953369
+client train time: 41.56517171859741
+client train time: 37.120861530303955
+client train time: 44.36512207984924
+client train time: 36.29389762878418
+client train time: 39.04597520828247
+client train time: 33.02644371986389
+client train time: 32.69104766845703
+client train time: 39.86988568305969
+client train time: 33.92766523361206
+server fedavg phrase
+agg time: 0.008568525314331055
+update phrase
+update phrase
+update phrase
+update phrase
+update phrase
+update phrase
+update phrase
+update phrase
+update phrase
+update phrase
+[33m=====Epoch   0=====[0m
+Training time: 1787045845.2332923 1787045455.0874305
+Training accuracy: 97.72
+Testing accuracy: 97.87
+Server average loss: 0.022
+Test loss: 0.073
+client train time: 38.11947202682495
+client train time: 38.667821645736694
+client train time: 40.00911259651184
+client train time: 39.080000162124634
+client train time: 36.759127378463745
+client train time: 34.75794529914856
+client train time: 35.84211850166321
+client train time: 37.21162033081055
+client train time: 38.75533843040466
+client train time: 39.244386434555054
+server fedavg phrase
+agg time: 0.0036973953247070312
+update phrase
+update phrase
+update phrase
+update phrase
+update phrase
+update phrase
+update phrase
+update phrase
+update phrase
+update phrase
+[33m=====Epoch   1=====[0m
+Training time: 1787046257.5568724 1787045879.0946636
+Training accuracy: 98.84
+Testing accuracy: 98.69
+Server average loss: 0.002
+Test loss: 0.047
+client train time: 42.79120445251465
+client train time: 39.82577061653137
+client train time: 46.55816626548767
+client train time: 36.827836990356445
+client train time: 32.27214694023132
+client train time: 40.500364542007446
+client train time: 39.655179262161255
+client train time: 33.52944827079773
+client train time: 36.671998262405396
+client train time: 37.893078565597534
+server fedavg phrase
+agg time: 0.003998517990112305
+update phrase
+update phrase
+update phrase
+update phrase
+update phrase
+update phrase
+update phrase
+update phrase
+update phrase
+update phrase
+[33m=====Epoch   2=====[0m
+Training time: 1787046685.1381767 1787046298.595411
+Training accuracy: 99.12
+Testing accuracy: 98.89
+Server average loss: 0.001
+Test loss: 0.040
+client train time: 40.02574062347412
+client train time: 40.10404849052429
+client train time: 51.69214630126953
+client train time: 37.15908336639404
+client train time: 40.493515968322754
+client train time: 34.46719551086426
+client train time: 37.532023191452026
+client train time: 35.752511501312256
+client train time: 28.27476477622986
+client train time: 27.84461212158203
+server fedavg phrase
+agg time: 0.0029993057250976562
+update phrase
+update phrase
+update phrase
+update phrase
+update phrase
+update phrase
+update phrase
+update phrase
+update phrase
+update phrase
+[33m=====Epoch   3=====[0m
+Training time: 1787047090.9844992 1787046717.6172404
+Training accuracy: 99.25
+Testing accuracy: 99.00
+Server average loss: 0.000
+Test loss: 0.034
+client train time: 27.49288582801819
+client train time: 29.155214309692383
+client train time: 28.08812165260315
+client train time: 28.245113134384155
+client train time: 27.922998666763306
+client train time: 28.70716166496277
+client train time: 28.76527738571167
+client train time: 29.071122884750366
+client train time: 28.205764532089233
+client train time: 28.11630392074585
+server fedavg phrase
+agg time: 0.0033333301544189453
+update phrase
+update phrase
+update phrase
+update phrase
+update phrase
+update phrase
+update phrase
+update phrase
+update phrase
+update phrase
+[33m=====Epoch   4=====[0m
+Training time: 1787047399.1839983 1787047115.401317
+Training accuracy: 99.35
+Testing accuracy: 99.03
+Server average loss: 0.000
+Test loss: 0.032
+client train time: 27.520506620407104
+client train time: 27.619282722473145
+client train time: 27.945171356201172
+client train time: 27.829694271087646
+client train time: 28.03992199897766
+client train time: 27.356430530548096
+client train time: 28.57331371307373
+client train time: 29.41607403755188
+client train time: 27.69460368156433
+client train time: 27.737684965133667
+server fedavg phrase
+agg time: 0.0035181045532226562
+update phrase
+update phrase
+update phrase
+update phrase
+update phrase
+update phrase
+update phrase
+update phrase
+update phrase
+update phrase
+[33m=====Epoch   5=====[0m
+Training time: 1787047703.4560575 1787047423.7107208
+Training accuracy: 99.43
+Testing accuracy: 99.12
+Server average loss: 0.000
+Test loss: 0.030
+client train time: 29.497422218322754
+client train time: 27.778082370758057
+client train time: 47.9657940864563
+client train time: 34.48412370681763
+client train time: 33.82277846336365
+client train time: 27.862873077392578
+client train time: 32.90016484260559
+client train time: 29.68259835243225
+client train time: 29.09757924079895
+client train time: 29.115660667419434
+server fedavg phrase
+agg time: 0.007363796234130859
+update phrase
+update phrase
+update phrase
+update phrase
+update phrase
+update phrase
+update phrase
+update phrase
+update phrase
+update phrase
+[33m=====Epoch   6=====[0m
+Training time: 1787048049.7625635 1787047727.538282
+Training accuracy: 99.52
+Testing accuracy: 99.12
+Server average loss: 0.000
+Test loss: 0.029
+client train time: 29.189868688583374
+client train time: 29.239553928375244
+client train time: 29.552451372146606
+client train time: 29.343236684799194
+client train time: 29.745267391204834
+client train time: 29.550386667251587
+client train time: 29.785067319869995
+client train time: 29.186272859573364
+client train time: 28.841151475906372
+client train time: 31.538878202438354
+server fedavg phrase
+agg time: 0.006543397903442383
+update phrase
+update phrase
+update phrase
+update phrase
+update phrase
+update phrase
+update phrase
+update phrase
+update phrase
+update phrase
+[33m=====Epoch   7=====[0m
+Training time: 1787048371.6682806 1787048075.681569
+Training accuracy: 99.56
+Testing accuracy: 99.13
+Server average loss: 0.000
+Test loss: 0.028
+client train time: 30.218385457992554
+client train time: 29.82166361808777
+client train time: 29.85961103439331
+client train time: 29.87164545059204
+client train time: 32.44791388511658
+client train time: 36.03452801704407
+client train time: 71.02012991905212
+client train time: 36.457648515701294
+client train time: 29.71799635887146
+client train time: 29.370797395706177
+server fedavg phrase
+agg time: 0.001508474349975586
+update phrase
+update phrase
+update phrase
+update phrase
+update phrase
+update phrase
+update phrase
+update phrase
+update phrase
+update phrase
+[33m=====Epoch   8=====[0m
+Training time: 1787048754.1770997 1787048399.3395538
+Training accuracy: 99.63
+Testing accuracy: 99.16
+Server average loss: 0.000
+Test loss: 0.028
+client train time: 29.498854160308838
+client train time: 31.977047443389893
+client train time: 29.365556240081787
+client train time: 29.667832136154175
+client train time: 29.003600120544434
+client train time: 31.713956117630005
+client train time: 29.44281792640686
+client train time: 29.348998308181763
+client train time: 29.327800035476685
+client train time: 29.165932178497314
+server fedavg phrase
+agg time: 0.0010194778442382812
+update phrase
+update phrase
+update phrase
+update phrase
+update phrase
+update phrase
+update phrase
+update phrase
+update phrase
+update phrase
+[33m=====Epoch   9=====[0m
+Training time: 1787049078.47402 1787048779.9486198
+Training accuracy: 99.66
+Testing accuracy: 99.17
+Server average loss: 0.000
+Test loss: 0.029
+all took time():  3649.027936935425
+acc_train: [97.71833038330078, 98.836669921875, 99.12333679199219, 99.25499725341797, 99.34500122070312, 99.42666625976562, 99.51667022705078, 99.55999755859375, 99.62833404541016, 99.66000366210938]
+acc_test: [97.87000274658203, 98.69000244140625, 98.88999938964844, 99.0, 99.02999877929688, 99.12000274658203, 99.12000274658203, 99.12999725341797, 99.16000366210938, 99.16999816894531]
+loss_glob: [0.02223083828041823, 0.0023869506731526075, 0.0010878084533458682, 0.0003947863213414728, 0.00021004466297480136, 0.00040102361172804444, 0.00019806847639931664, 0.00014582146818321098, 0.00013104336173378118, 0.00012738355970883913]
+loss_test: [0.0731598950104788, 0.047328834953987556, 0.03992028609907379, 0.03374158966734941, 0.03207291914316663, 0.030150271695052584, 0.02912823956550991, 0.02817337279931771, 0.028079771957846937, 0.028544404469597533]
+train_time_epochs： [1787045455.0874305, 1787045845.2332923, 1787046257.5568724, 1787046685.1381767, 1787047090.9844992, 1787047399.1839983, 1787047703.4560575, 1787048049.7625635, 1787048371.6682806, 1787048754.1770997, 1787049078.47402]

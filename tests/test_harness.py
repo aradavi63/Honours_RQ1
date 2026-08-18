@@ -1,3 +1,4 @@
+import io
 import unittest
 import tempfile
 from pathlib import Path
@@ -38,9 +39,25 @@ from rq1_harness.training import (
 from scripts.run_e0_matrix import run_one
 from scripts.run_e2_matrix import result_filename as e2_result_filename
 from scripts.run_e4a_matrix import result_filename
+from scripts.run_reference_fedshe import Tee
 
 
 class AggregationTests(unittest.TestCase):
+    def test_reference_tee_captures_unicode_on_ascii_console(self):
+        console_bytes = io.BytesIO()
+        console = io.TextIOWrapper(console_bytes, encoding="ascii")
+        capture = io.StringIO()
+        tee = Tee(console, capture)
+
+        tee.write("train_time_epochs： [1, 2]")
+        console.flush()
+
+        self.assertEqual(capture.getvalue(), "train_time_epochs： [1, 2]")
+        self.assertEqual(
+            console_bytes.getvalue().decode("ascii"),
+            r"train_time_epochs\uff1a [1, 2]",
+        )
+
     def test_e2_result_names_isolate_non_iid_runs(self):
         self.assertEqual(
             e2_result_filename("plaintext", "all_rounds", 0.2, 1),

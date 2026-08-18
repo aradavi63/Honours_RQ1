@@ -33,9 +33,16 @@ class Tee(io.TextIOBase):
         self.capture = capture
 
     def write(self, text: str) -> int:
-        self.console.write(text)
-        self.console.flush()
         self.capture.write(text)
+        try:
+            self.console.write(text)
+        except UnicodeEncodeError:
+            encoding = self.console.encoding or "ascii"
+            safe_text = text.encode(encoding, errors="backslashreplace").decode(
+                encoding
+            )
+            self.console.write(safe_text)
+        self.console.flush()
         return len(text)
 
     def flush(self) -> None:

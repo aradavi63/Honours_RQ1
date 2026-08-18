@@ -1,0 +1,695 @@
+cpu
+args:  Namespace(mode='CKKS', phe_key_len=2048, ckks_sec_level='128', ckks_mul_depth='0', ckks_key_len='1024', dataset='mnist', model='LeNet', epochs=10, num_users=10, local_ep=10, local_bs=64, bs=64, lr=0.015, momentum=0.9, split='user', num_classes=10, num_channels=1, gpu=-1, no_plot=True, device=device(type='cpu'))
+load dataset...
+clients and server initialization...
+ckks_params:  {'scheme': 'CKKS', 'n': 1024, 'scale': 1048576, 'qi_sizes': [27], 'sec': 128}
+success: valid
+start training...
+Homomorphic Encryption Scheme: [31mCKKS[0m
+start time():  [32m1787051575.0689285[0m
+client train time: 20.478378295898438
+CKKS encrypting...
+Encryption time: [32m0.08223485946655273[0m
+client train time: 16.350935459136963
+CKKS encrypting...
+Encryption time: [32m0.07943272590637207[0m
+client train time: 15.797271728515625
+CKKS encrypting...
+Encryption time: [32m0.05226564407348633[0m
+client train time: 16.34553599357605
+CKKS encrypting...
+Encryption time: [32m0.049300432205200195[0m
+client train time: 15.808171272277832
+CKKS encrypting...
+Encryption time: [32m0.04912686347961426[0m
+client train time: 16.365574836730957
+CKKS encrypting...
+Encryption time: [32m0.048928260803222656[0m
+client train time: 16.218889236450195
+CKKS encrypting...
+Encryption time: [32m0.05042529106140137[0m
+client train time: 16.09702181816101
+CKKS encrypting...
+Encryption time: [32m0.04958343505859375[0m
+client train time: 16.52010202407837
+CKKS encrypting...
+Encryption time: [32m0.05030512809753418[0m
+client train time: 16.060384273529053
+CKKS encrypting...
+Encryption time: [32m0.05159902572631836[0m
+server fedavg phrase
+agg time: 0.013125896453857422
+update phrase
+CKKS Decrypting...
+Decryption time: [32m0.017172813415527344[0m
+update phrase
+CKKS Decrypting...
+Decryption time: [32m0.020918846130371094[0m
+update phrase
+CKKS Decrypting...
+Decryption time: [32m0.015639305114746094[0m
+update phrase
+CKKS Decrypting...
+Decryption time: [32m0.01564812660217285[0m
+update phrase
+CKKS Decrypting...
+Decryption time: [32m0.015663862228393555[0m
+update phrase
+CKKS Decrypting...
+Decryption time: [32m0.015848875045776367[0m
+update phrase
+CKKS Decrypting...
+Decryption time: [32m0.01768970489501953[0m
+update phrase
+CKKS Decrypting...
+Decryption time: [32m0.016619205474853516[0m
+update phrase
+CKKS Decrypting...
+Decryption time: [32m0.0156097412109375[0m
+update phrase
+CKKS Decrypting...
+Decryption time: [32m0.01499176025390625[0m
+[33m=====Epoch   0=====[0m
+Training time: 1787051741.8948698 1787051575.0689478
+Training accuracy: 97.77
+Testing accuracy: 97.86
+Server average loss: 0.025
+Test loss: 0.071
+client train time: 15.794100999832153
+CKKS encrypting...
+Encryption time: [32m0.0647897720336914[0m
+client train time: 15.901096105575562
+CKKS encrypting...
+Encryption time: [32m0.05172324180603027[0m
+client train time: 16.541714906692505
+CKKS encrypting...
+Encryption time: [32m0.0509181022644043[0m
+client train time: 16.30567502975464
+CKKS encrypting...
+Encryption time: [32m0.05047488212585449[0m
+client train time: 18.790830850601196
+CKKS encrypting...
+Encryption time: [32m0.05105471611022949[0m
+client train time: 17.151121377944946
+CKKS encrypting...
+Encryption time: [32m0.054283857345581055[0m
+client train time: 16.836082458496094
+CKKS encrypting...
+Encryption time: [32m0.052011966705322266[0m
+client train time: 16.553503036499023
+CKKS encrypting...
+Encryption time: [32m0.06810927391052246[0m
+client train time: 15.796152830123901
+CKKS encrypting...
+Encryption time: [32m0.05205726623535156[0m
+client train time: 15.568857669830322
+CKKS encrypting...
+Encryption time: [32m0.0504908561706543[0m
+server fedavg phrase
+agg time: 0.02042412757873535
+update phrase
+CKKS Decrypting...
+Decryption time: [32m0.01621389389038086[0m
+update phrase
+CKKS Decrypting...
+Decryption time: [32m0.016013383865356445[0m
+update phrase
+CKKS Decrypting...
+Decryption time: [32m0.015304803848266602[0m
+update phrase
+CKKS Decrypting...
+Decryption time: [32m0.015465021133422852[0m
+update phrase
+CKKS Decrypting...
+Decryption time: [32m0.020553112030029297[0m
+update phrase
+CKKS Decrypting...
+Decryption time: [32m0.01513051986694336[0m
+update phrase
+CKKS Decrypting...
+Decryption time: [32m0.015668392181396484[0m
+update phrase
+CKKS Decrypting...
+Decryption time: [32m0.016569852828979492[0m
+update phrase
+CKKS Decrypting...
+Decryption time: [32m0.015103578567504883[0m
+update phrase
+CKKS Decrypting...
+Decryption time: [32m0.014816522598266602[0m
+[33m=====Epoch   1=====[0m
+Training time: 1787051922.1054902 1787051756.0967884
+Training accuracy: 98.85
+Testing accuracy: 98.72
+Server average loss: 0.003
+Test loss: 0.047
+client train time: 17.731346130371094
+CKKS encrypting...
+Encryption time: [32m0.05999398231506348[0m
+client train time: 15.896097898483276
+CKKS encrypting...
+Encryption time: [32m0.04878067970275879[0m
+client train time: 15.83773159980774
+CKKS encrypting...
+Encryption time: [32m0.048375606536865234[0m
+client train time: 16.13393783569336
+CKKS encrypting...
+Encryption time: [32m0.049057722091674805[0m
+client train time: 15.536832332611084
+CKKS encrypting...
+Encryption time: [32m0.04882359504699707[0m
+client train time: 15.798957109451294
+CKKS encrypting...
+Encryption time: [32m0.04915904998779297[0m
+client train time: 15.456938982009888
+CKKS encrypting...
+Encryption time: [32m0.04909181594848633[0m
+client train time: 15.955859899520874
+CKKS encrypting...
+Encryption time: [32m0.04802513122558594[0m
+client train time: 15.765171766281128
+CKKS encrypting...
+Encryption time: [32m0.054398536682128906[0m
+client train time: 15.639114141464233
+CKKS encrypting...
+Encryption time: [32m0.050343990325927734[0m
+server fedavg phrase
+agg time: 0.01056361198425293
+update phrase
+CKKS Decrypting...
+Decryption time: [32m0.015879154205322266[0m
+update phrase
+CKKS Decrypting...
+Decryption time: [32m0.01593327522277832[0m
+update phrase
+CKKS Decrypting...
+Decryption time: [32m0.015698909759521484[0m
+update phrase
+CKKS Decrypting...
+Decryption time: [32m0.015417098999023438[0m
+update phrase
+CKKS Decrypting...
+Decryption time: [32m0.016890525817871094[0m
+update phrase
+CKKS Decrypting...
+Decryption time: [32m0.01569056510925293[0m
+update phrase
+CKKS Decrypting...
+Decryption time: [32m0.015371084213256836[0m
+update phrase
+CKKS Decrypting...
+Decryption time: [32m0.014922857284545898[0m
+update phrase
+CKKS Decrypting...
+Decryption time: [32m0.015777587890625[0m
+update phrase
+CKKS Decrypting...
+Decryption time: [32m0.014940500259399414[0m
+[33m=====Epoch   2=====[0m
+Training time: 1787052096.5639603 1787051936.097795
+Training accuracy: 99.10
+Testing accuracy: 98.89
+Server average loss: 0.001
+Test loss: 0.039
+client train time: 16.566974639892578
+CKKS encrypting...
+Encryption time: [32m0.04916024208068848[0m
+client train time: 16.981390237808228
+CKKS encrypting...
+Encryption time: [32m0.048787593841552734[0m
+client train time: 16.792401552200317
+CKKS encrypting...
+Encryption time: [32m0.04710888862609863[0m
+client train time: 16.43586778640747
+CKKS encrypting...
+Encryption time: [32m0.05221295356750488[0m
+client train time: 16.160648345947266
+CKKS encrypting...
+Encryption time: [32m0.04962897300720215[0m
+client train time: 15.674206495285034
+CKKS encrypting...
+Encryption time: [32m0.04811692237854004[0m
+client train time: 15.745482206344604
+CKKS encrypting...
+Encryption time: [32m0.04851174354553223[0m
+client train time: 15.580705165863037
+CKKS encrypting...
+Encryption time: [32m0.06072640419006348[0m
+client train time: 15.753803014755249
+CKKS encrypting...
+Encryption time: [32m0.048598289489746094[0m
+client train time: 15.445741891860962
+CKKS encrypting...
+Encryption time: [32m0.047551870346069336[0m
+server fedavg phrase
+agg time: 0.010383129119873047
+update phrase
+CKKS Decrypting...
+Decryption time: [32m0.016565322875976562[0m
+update phrase
+CKKS Decrypting...
+Decryption time: [32m0.0158841609954834[0m
+update phrase
+CKKS Decrypting...
+Decryption time: [32m0.020331382751464844[0m
+update phrase
+CKKS Decrypting...
+Decryption time: [32m0.021076440811157227[0m
+update phrase
+CKKS Decrypting...
+Decryption time: [32m0.024191617965698242[0m
+update phrase
+CKKS Decrypting...
+Decryption time: [32m0.020818710327148438[0m
+update phrase
+CKKS Decrypting...
+Decryption time: [32m0.02010631561279297[0m
+update phrase
+CKKS Decrypting...
+Decryption time: [32m0.01934075355529785[0m
+update phrase
+CKKS Decrypting...
+Decryption time: [32m0.018293142318725586[0m
+update phrase
+CKKS Decrypting...
+Decryption time: [32m0.018521547317504883[0m
+[33m=====Epoch   3=====[0m
+Training time: 1787052272.0764127 1787052110.184803
+Training accuracy: 99.26
+Testing accuracy: 98.95
+Server average loss: 0.000
+Test loss: 0.035
+client train time: 15.818300485610962
+CKKS encrypting...
+Encryption time: [32m0.04687309265136719[0m
+client train time: 15.263485193252563
+CKKS encrypting...
+Encryption time: [32m0.04867076873779297[0m
+client train time: 16.414072513580322
+CKKS encrypting...
+Encryption time: [32m0.05556893348693848[0m
+client train time: 15.43377423286438
+CKKS encrypting...
+Encryption time: [32m0.048003196716308594[0m
+client train time: 15.528587102890015
+CKKS encrypting...
+Encryption time: [32m0.05921673774719238[0m
+client train time: 15.4915452003479
+CKKS encrypting...
+Encryption time: [32m0.04712414741516113[0m
+client train time: 15.331271171569824
+CKKS encrypting...
+Encryption time: [32m0.049581050872802734[0m
+client train time: 15.762765407562256
+CKKS encrypting...
+Encryption time: [32m0.0484466552734375[0m
+client train time: 15.394247770309448
+CKKS encrypting...
+Encryption time: [32m0.04941678047180176[0m
+client train time: 24.863502025604248
+CKKS encrypting...
+Encryption time: [32m0.06430625915527344[0m
+server fedavg phrase
+agg time: 0.013117551803588867
+update phrase
+CKKS Decrypting...
+Decryption time: [32m0.01898956298828125[0m
+update phrase
+CKKS Decrypting...
+Decryption time: [32m0.019991397857666016[0m
+update phrase
+CKKS Decrypting...
+Decryption time: [32m0.01860523223876953[0m
+update phrase
+CKKS Decrypting...
+Decryption time: [32m0.018140077590942383[0m
+update phrase
+CKKS Decrypting...
+Decryption time: [32m0.01883411407470703[0m
+update phrase
+CKKS Decrypting...
+Decryption time: [32m0.024666547775268555[0m
+update phrase
+CKKS Decrypting...
+Decryption time: [32m0.0181427001953125[0m
+update phrase
+CKKS Decrypting...
+Decryption time: [32m0.017632007598876953[0m
+update phrase
+CKKS Decrypting...
+Decryption time: [32m0.01877284049987793[0m
+update phrase
+CKKS Decrypting...
+Decryption time: [32m0.028005123138427734[0m
+[33m=====Epoch   4=====[0m
+Training time: 1787052451.9950142 1787052285.9127398
+Training accuracy: 99.35
+Testing accuracy: 99.01
+Server average loss: 0.000
+Test loss: 0.032
+client train time: 22.493618726730347
+CKKS encrypting...
+Encryption time: [32m0.06425166130065918[0m
+client train time: 21.65137791633606
+CKKS encrypting...
+Encryption time: [32m0.061510324478149414[0m
+client train time: 21.01370334625244
+CKKS encrypting...
+Encryption time: [32m0.05785179138183594[0m
+client train time: 22.346748113632202
+CKKS encrypting...
+Encryption time: [32m0.0636587142944336[0m
+client train time: 21.091354370117188
+CKKS encrypting...
+Encryption time: [32m0.06354403495788574[0m
+client train time: 17.994292974472046
+CKKS encrypting...
+Encryption time: [32m0.0553739070892334[0m
+client train time: 17.22996950149536
+CKKS encrypting...
+Encryption time: [32m0.04971480369567871[0m
+client train time: 20.52584409713745
+CKKS encrypting...
+Encryption time: [32m0.0501859188079834[0m
+client train time: 21.650293827056885
+CKKS encrypting...
+Encryption time: [32m0.05213332176208496[0m
+client train time: 17.186747789382935
+CKKS encrypting...
+Encryption time: [32m0.04980802536010742[0m
+server fedavg phrase
+agg time: 0.013894796371459961
+update phrase
+CKKS Decrypting...
+Decryption time: [32m0.01553797721862793[0m
+update phrase
+CKKS Decrypting...
+Decryption time: [32m0.01504969596862793[0m
+update phrase
+CKKS Decrypting...
+Decryption time: [32m0.01526021957397461[0m
+update phrase
+CKKS Decrypting...
+Decryption time: [32m0.019756317138671875[0m
+update phrase
+CKKS Decrypting...
+Decryption time: [32m0.015086174011230469[0m
+update phrase
+CKKS Decrypting...
+Decryption time: [32m0.015202760696411133[0m
+update phrase
+CKKS Decrypting...
+Decryption time: [32m0.015396595001220703[0m
+update phrase
+CKKS Decrypting...
+Decryption time: [32m0.01508641242980957[0m
+update phrase
+CKKS Decrypting...
+Decryption time: [32m0.01485133171081543[0m
+update phrase
+CKKS Decrypting...
+Decryption time: [32m0.014884233474731445[0m
+[33m=====Epoch   5=====[0m
+Training time: 1787052675.950975 1787052471.9884944
+Training accuracy: 99.42
+Testing accuracy: 99.04
+Server average loss: 0.000
+Test loss: 0.031
+client train time: 15.165940046310425
+CKKS encrypting...
+Encryption time: [32m0.049135684967041016[0m
+client train time: 15.677101850509644
+CKKS encrypting...
+Encryption time: [32m0.051253557205200195[0m
+client train time: 15.623751163482666
+CKKS encrypting...
+Encryption time: [32m0.048564910888671875[0m
+client train time: 15.8276207447052
+CKKS encrypting...
+Encryption time: [32m0.04954957962036133[0m
+client train time: 15.414374589920044
+CKKS encrypting...
+Encryption time: [32m0.05378532409667969[0m
+client train time: 16.168899059295654
+CKKS encrypting...
+Encryption time: [32m0.0495762825012207[0m
+client train time: 15.678720474243164
+CKKS encrypting...
+Encryption time: [32m0.05292224884033203[0m
+client train time: 18.79529595375061
+CKKS encrypting...
+Encryption time: [32m0.050498008728027344[0m
+client train time: 17.481845378875732
+CKKS encrypting...
+Encryption time: [32m0.051744699478149414[0m
+client train time: 15.698303699493408
+CKKS encrypting...
+Encryption time: [32m0.04895424842834473[0m
+server fedavg phrase
+agg time: 0.010286808013916016
+update phrase
+CKKS Decrypting...
+Decryption time: [32m0.015620231628417969[0m
+update phrase
+CKKS Decrypting...
+Decryption time: [32m0.015444278717041016[0m
+update phrase
+CKKS Decrypting...
+Decryption time: [32m0.017328500747680664[0m
+update phrase
+CKKS Decrypting...
+Decryption time: [32m0.016795873641967773[0m
+update phrase
+CKKS Decrypting...
+Decryption time: [32m0.016640663146972656[0m
+update phrase
+CKKS Decrypting...
+Decryption time: [32m0.015186548233032227[0m
+update phrase
+CKKS Decrypting...
+Decryption time: [32m0.015075445175170898[0m
+update phrase
+CKKS Decrypting...
+Decryption time: [32m0.01522684097290039[0m
+update phrase
+CKKS Decrypting...
+Decryption time: [32m0.014946460723876953[0m
+update phrase
+CKKS Decrypting...
+Decryption time: [32m0.014859914779663086[0m
+[33m=====Epoch   6=====[0m
+Training time: 1787052851.825231 1787052689.580043
+Training accuracy: 99.50
+Testing accuracy: 99.06
+Server average loss: 0.000
+Test loss: 0.030
+client train time: 15.9903404712677
+CKKS encrypting...
+Encryption time: [32m0.05022430419921875[0m
+client train time: 16.133201599121094
+CKKS encrypting...
+Encryption time: [32m0.05686163902282715[0m
+client train time: 16.955873012542725
+CKKS encrypting...
+Encryption time: [32m0.05040788650512695[0m
+client train time: 16.29019594192505
+CKKS encrypting...
+Encryption time: [32m0.05090641975402832[0m
+client train time: 15.841888427734375
+CKKS encrypting...
+Encryption time: [32m0.04853010177612305[0m
+client train time: 16.232096672058105
+CKKS encrypting...
+Encryption time: [32m0.05152177810668945[0m
+client train time: 15.476510286331177
+CKKS encrypting...
+Encryption time: [32m0.05275082588195801[0m
+client train time: 19.49670171737671
+CKKS encrypting...
+Encryption time: [32m0.06370759010314941[0m
+client train time: 20.691534519195557
+CKKS encrypting...
+Encryption time: [32m0.052503347396850586[0m
+client train time: 16.62528681755066
+CKKS encrypting...
+Encryption time: [32m0.05064201354980469[0m
+server fedavg phrase
+agg time: 0.01557016372680664
+update phrase
+CKKS Decrypting...
+Decryption time: [32m0.02117609977722168[0m
+update phrase
+CKKS Decrypting...
+Decryption time: [32m0.02655625343322754[0m
+update phrase
+CKKS Decrypting...
+Decryption time: [32m0.02177572250366211[0m
+update phrase
+CKKS Decrypting...
+Decryption time: [32m0.020959854125976562[0m
+update phrase
+CKKS Decrypting...
+Decryption time: [32m0.017653942108154297[0m
+update phrase
+CKKS Decrypting...
+Decryption time: [32m0.016524314880371094[0m
+update phrase
+CKKS Decrypting...
+Decryption time: [32m0.016376972198486328[0m
+update phrase
+CKKS Decrypting...
+Decryption time: [32m0.016217708587646484[0m
+update phrase
+CKKS Decrypting...
+Decryption time: [32m0.01606607437133789[0m
+update phrase
+CKKS Decrypting...
+Decryption time: [32m0.017047643661499023[0m
+[33m=====Epoch   7=====[0m
+Training time: 1787053035.9803345 1787052865.4641278
+Training accuracy: 99.55
+Testing accuracy: 99.11
+Server average loss: 0.000
+Test loss: 0.030
+client train time: 15.849849939346313
+CKKS encrypting...
+Encryption time: [32m0.05252695083618164[0m
+client train time: 16.33569598197937
+CKKS encrypting...
+Encryption time: [32m0.05296444892883301[0m
+client train time: 15.814215183258057
+CKKS encrypting...
+Encryption time: [32m0.04866909980773926[0m
+client train time: 15.789689540863037
+CKKS encrypting...
+Encryption time: [32m0.0488433837890625[0m
+client train time: 17.060474395751953
+CKKS encrypting...
+Encryption time: [32m0.05405020713806152[0m
+client train time: 18.58736300468445
+CKKS encrypting...
+Encryption time: [32m0.047928571701049805[0m
+client train time: 16.56950283050537
+CKKS encrypting...
+Encryption time: [32m0.04982280731201172[0m
+client train time: 15.64116883277893
+CKKS encrypting...
+Encryption time: [32m0.052530527114868164[0m
+client train time: 15.962051391601562
+CKKS encrypting...
+Encryption time: [32m0.05080246925354004[0m
+client train time: 15.5381338596344
+CKKS encrypting...
+Encryption time: [32m0.048409461975097656[0m
+server fedavg phrase
+agg time: 0.011664390563964844
+update phrase
+CKKS Decrypting...
+Decryption time: [32m0.0181884765625[0m
+update phrase
+CKKS Decrypting...
+Decryption time: [32m0.015737056732177734[0m
+update phrase
+CKKS Decrypting...
+Decryption time: [32m0.016608476638793945[0m
+update phrase
+CKKS Decrypting...
+Decryption time: [32m0.015416383743286133[0m
+update phrase
+CKKS Decrypting...
+Decryption time: [32m0.015015363693237305[0m
+update phrase
+CKKS Decrypting...
+Decryption time: [32m0.014957427978515625[0m
+update phrase
+CKKS Decrypting...
+Decryption time: [32m0.015375375747680664[0m
+update phrase
+CKKS Decrypting...
+Decryption time: [32m0.015249013900756836[0m
+update phrase
+CKKS Decrypting...
+Decryption time: [32m0.014967918395996094[0m
+update phrase
+CKKS Decrypting...
+Decryption time: [32m0.014925956726074219[0m
+[33m=====Epoch   8=====[0m
+Training time: 1787053213.9443703 1787053050.0819888
+Training accuracy: 99.61
+Testing accuracy: 99.17
+Server average loss: 0.000
+Test loss: 0.029
+client train time: 15.602679967880249
+CKKS encrypting...
+Encryption time: [32m0.05006098747253418[0m
+client train time: 16.08529233932495
+CKKS encrypting...
+Encryption time: [32m0.04968857765197754[0m
+client train time: 19.361687421798706
+CKKS encrypting...
+Encryption time: [32m0.05271601676940918[0m
+client train time: 17.306605577468872
+CKKS encrypting...
+Encryption time: [32m0.052164316177368164[0m
+client train time: 15.633590698242188
+CKKS encrypting...
+Encryption time: [32m0.05107712745666504[0m
+client train time: 16.792361974716187
+CKKS encrypting...
+Encryption time: [32m0.052216529846191406[0m
+client train time: 15.499248743057251
+CKKS encrypting...
+Encryption time: [32m0.05075693130493164[0m
+client train time: 15.385592222213745
+CKKS encrypting...
+Encryption time: [32m0.05481982231140137[0m
+client train time: 15.869981288909912
+CKKS encrypting...
+Encryption time: [32m0.06292319297790527[0m
+client train time: 15.754879474639893
+CKKS encrypting...
+Encryption time: [32m0.05079364776611328[0m
+server fedavg phrase
+agg time: 0.010940074920654297
+update phrase
+CKKS Decrypting...
+Decryption time: [32m0.016278505325317383[0m
+update phrase
+CKKS Decrypting...
+Decryption time: [32m0.016005277633666992[0m
+update phrase
+CKKS Decrypting...
+Decryption time: [32m0.01556706428527832[0m
+update phrase
+CKKS Decrypting...
+Decryption time: [32m0.016361713409423828[0m
+update phrase
+CKKS Decrypting...
+Decryption time: [32m0.015683412551879883[0m
+update phrase
+CKKS Decrypting...
+Decryption time: [32m0.015408754348754883[0m
+update phrase
+CKKS Decrypting...
+Decryption time: [32m0.015486478805541992[0m
+update phrase
+CKKS Decrypting...
+Decryption time: [32m0.015512943267822266[0m
+update phrase
+CKKS Decrypting...
+Decryption time: [32m0.015578746795654297[0m
+update phrase
+CKKS Decrypting...
+Decryption time: [32m0.015279054641723633[0m
+[33m=====Epoch   9=====[0m
+Training time: 1787053391.8025498 1787053227.7745287
+Training accuracy: 99.66
+Testing accuracy: 99.17
+Server average loss: 0.000
+Test loss: 0.029
+all took time():  1830.3620131015778
+acc_train: [97.77333068847656, 98.84500122070312, 99.10333251953125, 99.26499938964844, 99.34500122070312, 99.41500091552734, 99.49500274658203, 99.55333709716797, 99.61333465576172, 99.66166687011719]
+acc_test: [97.86000061035156, 98.72000122070312, 98.88999938964844, 98.94999694824219, 99.01000213623047, 99.04000091552734, 99.05999755859375, 99.11000061035156, 99.16999816894531, 99.16999816894531]
+loss_glob: [0.02472393742093427, 0.0032496045632564967, 0.0006438494621577659, 0.0002916628654891107, 0.00020310856645684247, 0.0002002703169458247, 0.00016045109021535338, 0.0001444969488967759, 0.00013167690148344129, 0.00012690455207206848]
+loss_test: [0.07057279561115429, 0.046732845513111715, 0.038992521049845665, 0.034559100755098195, 0.03195499337037172, 0.030516925171800834, 0.029940222587336723, 0.030202707016880624, 0.02860414908221793, 0.028685151747929103]
+train_time_epochs： [1787051575.0689285, 1787051741.8948698, 1787051922.1054902, 1787052096.5639603, 1787052272.0764127, 1787052451.9950142, 1787052675.950975, 1787052851.825231, 1787053035.9803345, 1787053213.9443703, 1787053391.8025498]

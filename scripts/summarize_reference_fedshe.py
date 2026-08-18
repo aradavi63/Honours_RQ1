@@ -55,10 +55,18 @@ def main() -> int:
     plain_accuracy = plain_metrics["test_accuracy_percent"][-1]
     ckks_accuracy = ckks_metrics["test_accuracy_percent"][-1]
     global_rounds = plain_metadata["configuration"]["global_rounds"]
+    local_epochs = plain_metadata["configuration"]["local_epochs"]
     if global_rounds == 1:
         interpretation_limit = (
             "This one-round smoke verifies original-code execution and approximate "
             "CKKS utility, not paper-scale convergence. Plain ran on native Windows "
+            "and CKKS under WSL, so total runtimes are recorded but must not be used "
+            "as a controlled encryption-overhead comparison."
+        )
+    elif global_rounds == 10 and local_epochs == 10:
+        interpretation_limit = (
+            "This run uses the README's full 10-global-round, 10-local-epoch MNIST "
+            "schedule with the original pinned code. Plain ran on native Windows "
             "and CKKS under WSL, so total runtimes are recorded but must not be used "
             "as a controlled encryption-overhead comparison."
         )
