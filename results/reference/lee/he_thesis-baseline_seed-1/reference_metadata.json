@@ -1,0 +1,49 @@
+{
+  "status": "reference_run_completed",
+  "reference_repo": "repos/server-initiated_HE_FL",
+  "reference_commit": "80575b5ff813fb2b4ba1a7786576ca65bf5d3303",
+  "reference_source_modified": false,
+  "mode": "he",
+  "gui": false,
+  "headless_adapter": true,
+  "run_label": "thesis-baseline",
+  "scale_note": "Matches the MNIST baseline configuration reported in Lee's thesis.",
+  "configuration_basis": "Lee thesis Section 7.2 and Figures 3-6; num_samples, batch size, learning rate and momentum use the pinned repository defaults.",
+  "seed_injected_by_wrapper": 1,
+  "determinism_note": "The original client threads share process-level random state; repeated runs may differ despite wrapper seeding.",
+  "configuration": {
+    "dataset": "MNIST",
+    "model": "reference Mnistcnn",
+    "clients": 10,
+    "samples_per_client": 100,
+    "rounds": 20,
+    "local_epochs": 5,
+    "batch_size": 12,
+    "dirichlet_alpha": 1.0,
+    "partition_size": 10
+  },
+  "environment": {
+    "python_executable": "C:\\Users\\Adam\\anaconda3\\envs\\rq1-lee-he\\python.exe",
+    "python_version": "3.9.23",
+    "torch_version": "2.3.0+cpu",
+    "torchvision_version": "0.18.0+cpu",
+    "tenseal_version": "0.3.14",
+    "numpy_version": "1.26.4",
+    "platform": "Windows-10-10.0.22631-SP0",
+    "processor": "Intel64 Family 6 Model 142 Stepping 12, GenuineIntel",
+    "physical_cpu_cores": 4,
+    "logical_cpu_cores": 8,
+    "physical_memory_gib": 15.75
+  },
+  "result": {
+    "final_accuracy_percent": 99.2,
+    "final_mean_client_loss": 0.0035194332321712486
+  },
+  "native_files": [
+    ".lee-reference-he_thesis-baseline_seed-1_scores.csv",
+    ".lee-reference-he_thesis-baseline_seed-1_sizes.csv",
+    ".lee-reference-he_thesis-baseline_seed-1_times.csv",
+    ".lee-reference-he_thesis-baseline_seed-1_transmissions.csv"
+  ],
+  "native_result_directory": "results\\reference\\lee\\he_thesis-baseline_seed-1"
+}

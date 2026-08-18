@@ -101,15 +101,23 @@ def main() -> int:
         row["standard_transmissions"] for row in trajectory
     )
     he_transmission_total = sum(row["he_transmissions"] for row in trajectory)
+    if args.run_label == "thesis-baseline" and rounds == 20:
+        interpretation_limit = (
+            "This paired run uses the full MNIST configuration reported in Lee's "
+            "thesis, but one seed does not estimate cross-seed uncertainty and "
+            "runtime is not directly comparable across different hardware."
+        )
+    else:
+        interpretation_limit = (
+            f"One {rounds}-round paired pilot demonstrates execution and convergence; "
+            "it does not estimate cross-seed uncertainty or reproduce the full "
+            "20-round, five-local-epoch reference configuration."
+        )
     summary = {
         "run_label": args.run_label,
         "seed": args.seed,
         "rounds": rounds,
-        "interpretation_limit": (
-            "One three-round paired pilot demonstrates execution and convergence; "
-            "it does not estimate cross-seed uncertainty or reproduce the full "
-            "20-round, five-local-epoch reference configuration."
-        ),
+        "interpretation_limit": interpretation_limit,
         "native_timing_note": (
             "Lee repeats the whole-run total_time in every round row; this summary "
             "uses that repeated value once and does not sum it."
