@@ -50,7 +50,16 @@ class Tee(io.TextIOBase):
 
 def reference_commit() -> str:
     return subprocess.check_output(
-        ["git", "-C", str(REFERENCE), "rev-parse", "HEAD"], text=True
+        [
+            "git",
+            "-c",
+            "safe.directory=*",
+            "-C",
+            str(REFERENCE),
+            "rev-parse",
+            "HEAD",
+        ],
+        text=True,
     ).strip()
 
 
@@ -91,7 +100,7 @@ def main() -> int:
     parser = argparse.ArgumentParser(
         description="Execute FedSHE's pinned original main.py with recorded provenance"
     )
-    parser.add_argument("--mode", choices=("Plain",), default="Plain")
+    parser.add_argument("--mode", choices=("Plain", "CKKS"), default="Plain")
     parser.add_argument("--seed", type=int, default=1)
     parser.add_argument("--clients", type=int, default=10)
     parser.add_argument("--rounds", type=int, default=1)
@@ -99,6 +108,16 @@ def main() -> int:
     parser.add_argument("--batch-size", type=int, default=64)
     parser.add_argument("--learning-rate", type=float, default=0.015)
     parser.add_argument("--momentum", type=float, default=0.9)
+    parser.add_argument("--ckks-security-level", choices=("128", "192", "256"), default="128")
+    parser.add_argument(
+        "--ckks-multiplication-depth", type=int, choices=range(0, 8), default=0
+    )
+    parser.add_argument(
+        "--ckks-polynomial-degree",
+        type=int,
+        choices=(1024, 2048, 4096, 8192, 16384, 32768),
+        default=1024,
+    )
     parser.add_argument("--run-label", default="smoke")
     parser.add_argument(
         "--output-dir",
@@ -123,7 +142,15 @@ def main() -> int:
     random.seed(args.seed)
     np.random.seed(args.seed)
     torch.manual_seed(args.seed)
-    install_plain_import_shims()
+    if args.mode == "Plain":
+        install_plain_import_shims()
+    else:
+        try:
+            importlib.import_module("Pyfhel")
+        except ImportError as exc:
+            parser.error(
+                "CKKS requires real Pyfhel; run in WSL environment rq1-fedshe-ckks"
+            )
     original_cwd = Path.cwd()
     original_path = sys.path[:]
     original_argv = sys.argv[:]
@@ -157,6 +184,12 @@ def main() -> int:
             str(args.momentum),
             "--mode",
             args.mode,
+            "--ckks_sec_level",
+            args.ckks_security_level,
+            "--ckks_mul_depth",
+            str(args.ckks_multiplication_depth),
+            "--ckks_key_len",
+            str(args.ckks_polynomial_degree),
             "--no-plot",
         ]
         tee = Tee(sys.stdout, capture)
@@ -198,10 +231,14 @@ def main() -> int:
         "reference_source_modified": False,
         "mode": args.mode,
         "run_label": args.run_label,
-        "compatibility_shims": {
-            "resource": "unused Unix import supplied on Windows",
-            "Pyfhel": "unused import-only placeholder in Plain mode",
-        },
+        "compatibility_shims": (
+            {
+                "resource": "unused Unix import supplied on Windows",
+                "Pyfhel": "unused import-only placeholder in Plain mode",
+            }
+            if args.mode == "Plain"
+            else {}
+        ),
         "fidelity_note": (
             "Original main.py, client.py, server.py, LeNet, IID partitioning, "
             "local training and FedAvg execute unchanged. The wrapper injects a "
@@ -222,6 +259,15 @@ def main() -> int:
             "momentum": args.momentum,
             "training_samples": 60000,
             "test_samples": 10000,
+            "ckks_security_level_bits": (
+                int(args.ckks_security_level) if args.mode == "CKKS" else None
+            ),
+            "ckks_multiplication_depth": (
+                args.ckks_multiplication_depth if args.mode == "CKKS" else None
+            ),
+            "ckks_polynomial_modulus_degree": (
+                args.ckks_polynomial_degree if args.mode == "CKKS" else None
+            ),
         },
         "seed_injected_by_wrapper": args.seed,
         "environment": {
