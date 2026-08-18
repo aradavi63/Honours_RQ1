@@ -1,0 +1,41 @@
+cpu
+args:  Namespace(mode='Plain', phe_key_len=2048, ckks_sec_level='128', ckks_mul_depth='0', ckks_key_len='1024', dataset='mnist', model='LeNet', epochs=1, num_users=10, local_ep=1, local_bs=64, bs=64, lr=0.015, momentum=0.9, split='user', num_classes=10, num_channels=1, gpu=-1, no_plot=True, device=device(type='cpu'))
+load dataset...
+clients and server initialization...
+start training...
+Homomorphic Encryption Scheme: [31mPlain[0m
+start time():  [32m1787033948.9263992[0m
+client train time: 4.188326120376587
+client train time: 4.415184020996094
+client train time: 3.758512020111084
+client train time: 3.2636380195617676
+client train time: 3.949293851852417
+client train time: 3.527672290802002
+client train time: 4.28809666633606
+client train time: 4.306070327758789
+client train time: 3.7924728393554688
+client train time: 3.5587105751037598
+server fedavg phrase
+agg time: 0.0111083984375
+update phrase
+update phrase
+update phrase
+update phrase
+update phrase
+update phrase
+update phrase
+update phrase
+update phrase
+update phrase
+[33m=====Epoch   0=====[0m
+Training time: 1787033988.0031562 1787033948.9263992
+Training accuracy: 90.06
+Testing accuracy: 90.65
+Server average loss: 1.314
+Test loss: 0.304
+all took time():  78.64379000663757
+acc_train: [90.0566635131836]
+acc_test: [90.6500015258789]
+loss_glob: [1.3142121886319302]
+loss_test: [0.30354593691825865]
+train_time_epochs： [1787033948.9263992, 1787033988.0031562]

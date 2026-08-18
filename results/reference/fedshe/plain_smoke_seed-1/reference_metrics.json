@@ -1,0 +1,15 @@
+{
+  "training_accuracy_percent": [
+    90.0566635131836
+  ],
+  "test_accuracy_percent": [
+    90.6500015258789
+  ],
+  "global_loss": [
+    1.3142121886319302
+  ],
+  "test_loss": [
+    0.30354593691825865
+  ],
+  "total_time_seconds": 78.64379000663757
+}
