@@ -54,6 +54,22 @@ def main() -> int:
 
     plain_accuracy = plain_metrics["test_accuracy_percent"][-1]
     ckks_accuracy = ckks_metrics["test_accuracy_percent"][-1]
+    global_rounds = plain_metadata["configuration"]["global_rounds"]
+    if global_rounds == 1:
+        interpretation_limit = (
+            "This one-round smoke verifies original-code execution and approximate "
+            "CKKS utility, not paper-scale convergence. Plain ran on native Windows "
+            "and CKKS under WSL, so total runtimes are recorded but must not be used "
+            "as a controlled encryption-overhead comparison."
+        )
+    else:
+        interpretation_limit = (
+            f"This {global_rounds}-round pilot verifies original-code convergence "
+            "and approximate CKKS utility, not the paper's full 10-global-round, "
+            "10-local-epoch schedule. Plain ran on native Windows and CKKS under "
+            "WSL, so total runtimes are recorded but must not be used as a "
+            "controlled encryption-overhead comparison."
+        )
     summary = {
         "run_label": args.run_label,
         "seed": args.seed,
@@ -70,12 +86,7 @@ def main() -> int:
             "plain_total_time_seconds": plain_metrics["total_time_seconds"],
             "ckks_total_time_seconds": ckks_metrics["total_time_seconds"],
         },
-        "interpretation_limit": (
-            "This one-round smoke verifies original-code execution and approximate "
-            "CKKS utility, not paper-scale convergence. Plain ran on native Windows "
-            "and CKKS under WSL, so total runtimes are recorded but must not be used "
-            "as a controlled encryption-overhead comparison."
-        ),
+        "interpretation_limit": interpretation_limit,
     }
     output = args.results_dir / f"{args.run_label}-summary.json"
     output.write_text(json.dumps(summary, indent=2) + "\n", encoding="utf-8")

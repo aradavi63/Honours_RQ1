@@ -1,0 +1,25 @@
+{
+  "run_label": "convergence-pilot",
+  "seed": 1,
+  "reference_commit": "7a354246782b603616b09ed05b4c3fc0cfed92e8",
+  "configuration": {
+    "dataset": "MNIST",
+    "model": "LeNetMnist",
+    "iid_clients": 10,
+    "global_rounds": 3,
+    "local_epochs": 1,
+    "local_batch_size": 64,
+    "learning_rate": 0.015,
+    "momentum": 0.9,
+    "training_samples": 60000,
+    "test_samples": 10000
+  },
+  "result": {
+    "plain_final_test_accuracy_percent": 97.05999755859375,
+    "ckks_final_test_accuracy_percent": 97.0,
+    "accuracy_difference_plain_minus_ckks_points": 0.059998,
+    "plain_total_time_seconds": 226.03219771385193,
+    "ckks_total_time_seconds": 114.71917223930359
+  },
+  "interpretation_limit": "This 3-round pilot verifies original-code convergence and approximate CKKS utility, not the paper's full 10-global-round, 10-local-epoch schedule. Plain ran on native Windows and CKKS under WSL, so total runtimes are recorded but must not be used as a controlled encryption-overhead comparison."
+}
