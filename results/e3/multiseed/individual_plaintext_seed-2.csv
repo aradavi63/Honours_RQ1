@@ -1,0 +1,2 @@
+observation,dataset,seed,aggregate_size,true_target_label,inferred_label,iterations,final_gradient_mismatch,attack_seconds,applicability,reason,mse,psnr,ssim,label_recovery
+individual_plaintext,mnist,2,1,8,8,300,0.13132812082767487,2.5346581000000006,applicable,Direct single-example gradient observation,0.04025413632773357,13.951894869231232,0.7734032487749813,1.0

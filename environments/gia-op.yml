@@ -5,16 +5,17 @@ channels:
   - defaults
 dependencies:
   - python=3.10
-  - pip
-  - numpy=1.26
+  - pip<25
+  - numpy=1.26.4
   - scipy=1.11
   - scikit-image=0.22
   - matplotlib=3.8
-  - pillow=10
-  - pytorch=2.1
-  - torchvision=0.16
-  - cpuonly
+  - certifi
   - pip:
+      # Keep the attack stack on the same known-working official CPU build.
+      - --extra-index-url https://download.pytorch.org/whl/cpu
+      - torch==2.3.0+cpu
+      - torchvision==0.18.0+cpu
+      - pillow==10.3.0
       - kornia==0.7.1
       - lpips==0.1.4
-

@@ -11,6 +11,13 @@ from rq1_harness.fedshe import (
     load_fedshe_ckks_parameters,
 )
 from rq1_harness.metrics import aggregation_error, targeted_attack_success_rate
+from rq1_harness.inversion import (
+    average_gradients,
+    ciphertext_only_result,
+    infer_single_label,
+    parameter_gradients,
+    reconstruction_metrics,
+)
 from rq1_harness.poisoning import (
     attack_is_active,
     attack_metrics,
@@ -111,6 +118,40 @@ class AggregationTests(unittest.TestCase):
         self.assertEqual(values["source_recall"], 0.5)
         self.assertEqual(values["targeted_attack_success_rate"], 0.5)
         self.assertEqual(values["unaffected_macro_recall"], 0.75)
+
+    def test_individual_gradient_recovers_label(self):
+        model = torch.nn.Sequential(torch.nn.Flatten(), torch.nn.Linear(4, 3))
+        gradients = parameter_gradients(
+            model, torch.tensor([[[[0.1, 0.2], [0.3, 0.4]]]]), torch.tensor([2])
+        )
+        self.assertEqual(infer_single_label(gradients), 2)
+
+    def test_average_gradients_matches_mean_batch_gradient(self):
+        model = torch.nn.Sequential(torch.nn.Flatten(), torch.nn.Linear(4, 3))
+        inputs = torch.tensor(
+            [[[[0.1, 0.2], [0.3, 0.4]]], [[[0.9, 0.8], [0.7, 0.6]]]]
+        )
+        labels = torch.tensor([0, 2])
+        individuals = [
+            parameter_gradients(model, inputs[index : index + 1], labels[index : index + 1])
+            for index in range(2)
+        ]
+        averaged = average_gradients(individuals)
+        batch = parameter_gradients(model, inputs, labels)
+        for actual, expected in zip(averaged, batch):
+            torch.testing.assert_close(actual, expected)
+
+    def test_reconstruction_metrics_are_exact_for_identical_images(self):
+        image = torch.tensor([[[[0.0, 0.5], [0.75, 1.0]]]])
+        values = reconstruction_metrics(image, image)
+        self.assertEqual(values["mse"], 0.0)
+        self.assertEqual(values["psnr"], float("inf"))
+        self.assertAlmostEqual(values["ssim"], 1.0)
+
+    def test_ciphertext_observation_is_not_attackable_as_plaintext(self):
+        result = ciphertext_only_result()
+        self.assertEqual(result["applicability"], "not_applicable")
+        self.assertTrue(np.isnan(result["mse"]))
 
 
 if __name__ == "__main__":

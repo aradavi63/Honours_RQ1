@@ -251,10 +251,44 @@ experiments:
       interpretation: FedSHE rounding perturbs individual outcomes slightly but preserves the finding that early model formation is substantially more vulnerable than late rounds.
     metrics: [test_accuracy, source_recall, targeted_attack_success_rate, unaffected_macro_recall]
   e3_gradient_inversion:
-    status: observation_adapter_pending
-    implementation: repos/GIA/OP-GIA/IG
+    status: baseline_multiseed_pilot_completed
+    runner: scripts/run_e3_matrix.py
+    reference_implementation: repos/GIA/OP-GIA/IG
+    implementation: rq1_harness/inversion.py
     observations: [individual_plaintext, aggregate_2, aggregate_5, aggregate_10, ciphertext_only]
-    metrics: [mse, psnr, ssim, lpips, label_recovery, applicability]
+    attack_model: single-image DLG-style squared-gradient matching with iDLG label inference
+    interpretation_constraint: Aggregate observations are attacked with a deliberately fixed single-image adversary and scored against the first hidden example; ciphertext-only is an applicability result, not a reconstruction run.
+    pilot_configuration:
+      dataset: MNIST
+      iterations: 300
+      learning_rate: 0.1
+      seeds: [1, 2, 3, 4, 5]
+    result_file_pattern: "results/e3/multiseed/{individual_plaintext,aggregate_2,aggregate_5,aggregate_10,ciphertext_only}_seed-{1..5}.csv"
+    reconstruction_file_pattern: "results/e3/reconstructions/{individual_plaintext,aggregate_2,aggregate_5,aggregate_10}_seed-{1..5}.pt"
+    rendered_image_pattern: "results/e3/images/{individual_plaintext,aggregate_2,aggregate_5,aggregate_10}_seed-{1..5}.png"
+    renderer: scripts/render_e3_reconstructions.py
+    completed_result_files: 25
+    pilot_summary:
+      individual_plaintext_mean_mse: 0.0340585093420438
+      individual_plaintext_mean_psnr: 15.0203790077612
+      individual_plaintext_mean_ssim: 0.714051245700636
+      individual_plaintext_label_recovery: 1.0
+      aggregate_2_mean_mse: 0.0732404190179122
+      aggregate_2_mean_psnr: 11.6598267556123
+      aggregate_2_mean_ssim: 0.266070256378188
+      aggregate_2_first_sample_label_recovery: 0.6
+      aggregate_5_mean_mse: 0.0787060885885267
+      aggregate_5_mean_psnr: 11.1866410093851
+      aggregate_5_mean_ssim: 0.150061673781388
+      aggregate_5_first_sample_label_recovery: 0.4
+      aggregate_10_mean_mse: 0.0945997689352885
+      aggregate_10_mean_psnr: 10.3878607438985
+      aggregate_10_mean_ssim: 0.0429740750479979
+      aggregate_10_first_sample_label_recovery: 0.4
+      ciphertext_only_applicability: not_applicable_without_decryption_key
+      visual_verification: Rendered pairs confirm recognizable but noisy individual reconstructions, mixed partial structure for aggregates of two and five, and no clearly attributable digit for aggregates of ten.
+      interpretation: Direct individual gradients leaked recognizable sample information in this baseline, whereas larger plaintext aggregates increasingly obscured any one sample. CKKS ciphertext cannot be supplied to this plaintext gradient-matching objective without decryption.
+    metrics: [mse, psnr, ssim, label_recovery, applicability]
   e4a_fedmia_update_based:
     status: observation_adapter_pending
     implementation: repos/FedMIA

@@ -1,0 +1,2 @@
+observation,dataset,seed,aggregate_size,true_target_label,inferred_label,iterations,final_gradient_mismatch,attack_seconds,applicability,reason,mse,psnr,ssim,label_recovery
+aggregate_10,mnist,1,10,7,7,300,4.015420913696289,2.4872900000000007,applicable,Single-image attacker applied to an averaged multi-example gradient; metrics compare with the first hidden example,0.06965206928549089,11.57065976642449,0.021614727040755986,1.0
