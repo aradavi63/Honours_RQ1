@@ -1,0 +1,40 @@
+{
+  "status": "reference_run_completed",
+  "reference_repo": "repos/server-initiated_HE_FL",
+  "reference_commit": "80575b5ff813fb2b4ba1a7786576ca65bf5d3303",
+  "reference_source_modified": false,
+  "mode": "standard",
+  "gui": false,
+  "headless_adapter": true,
+  "run_label": "convergence-pilot",
+  "scale_note": "Reference scenario pilot; not a full 20-round result.",
+  "seed_injected_by_wrapper": 1,
+  "determinism_note": "The original client threads share process-level random state; repeated runs may differ despite wrapper seeding.",
+  "configuration": {
+    "dataset": "MNIST",
+    "model": "reference Mnistcnn",
+    "clients": 10,
+    "samples_per_client": 100,
+    "rounds": 3,
+    "local_epochs": 1,
+    "batch_size": 12,
+    "dirichlet_alpha": 1.0,
+    "partition_size": 10
+  },
+  "environment": {
+    "python_executable": "C:\\Users\\Adam\\anaconda3\\envs\\rq1-lee-he\\python.exe",
+    "python_version": "3.9.23",
+    "torch_version": "2.3.0+cpu",
+    "platform": "Windows-10-10.0.22631-SP0"
+  },
+  "result": {
+    "final_accuracy_percent": 96.86,
+    "final_mean_client_loss": 0.14182294099045778
+  },
+  "native_files": [
+    ".lee-reference-standard_convergence-pilot_seed-1_scores.csv",
+    ".lee-reference-standard_convergence-pilot_seed-1_times.csv",
+    ".lee-reference-standard_convergence-pilot_seed-1_transmissions.csv"
+  ],
+  "native_result_directory": "results\\reference\\lee\\standard_convergence-pilot_seed-1"
+}
