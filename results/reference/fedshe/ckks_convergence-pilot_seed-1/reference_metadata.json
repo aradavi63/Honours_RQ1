@@ -1,0 +1,41 @@
+{
+  "status": "reference_run_completed",
+  "reference_repo": "repos/FedSHE",
+  "reference_commit": "7a354246782b603616b09ed05b4c3fc0cfed92e8",
+  "reference_source_modified": false,
+  "mode": "CKKS",
+  "run_label": "convergence-pilot",
+  "compatibility_shims": {},
+  "fidelity_note": "Original main.py, client.py, server.py, LeNet, IID partitioning, local training and FedAvg execute unchanged. The wrapper injects a seed, arguments, compatible imports and result capture.",
+  "scale_note": "Full 60,000-sample MNIST training set, but reduced rounds/local epochs; not a paper-scale result.",
+  "configuration": {
+    "dataset": "MNIST",
+    "model": "LeNetMnist",
+    "iid_clients": 10,
+    "global_rounds": 3,
+    "local_epochs": 1,
+    "local_batch_size": 64,
+    "learning_rate": 0.015,
+    "momentum": 0.9,
+    "training_samples": 60000,
+    "test_samples": 10000,
+    "ckks_security_level_bits": 128,
+    "ckks_multiplication_depth": 0,
+    "ckks_polynomial_modulus_degree": 1024
+  },
+  "seed_injected_by_wrapper": 1,
+  "environment": {
+    "python_executable": "/home/adam/miniconda3/envs/rq1-fedshe-ckks/bin/python",
+    "python_version": "3.9.23",
+    "torch_version": "1.13.1+cpu",
+    "numpy_version": "1.21.6",
+    "platform": "Linux-6.18.33.2-microsoft-standard-WSL2-x86_64-with-glibc2.35",
+    "processor": "x86_64",
+    "logical_cpu_cores": 8
+  },
+  "result": {
+    "final_test_accuracy_percent": 97.0,
+    "final_test_loss": 0.09306076281815767,
+    "total_time_seconds": 114.71917223930359
+  }
+}
