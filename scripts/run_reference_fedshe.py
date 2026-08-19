@@ -27,6 +27,27 @@ REFERENCE = ROOT / "repos" / "FedSHE"
 EXPECTED_COMMIT = "7a354246782b603616b09ed05b4c3fc0cfed92e8"
 
 
+def compatibility_shims(mode: str, operating_system: str = os.name) -> dict[str, str]:
+    if mode != "Plain" or operating_system != "nt":
+        return {}
+    return {
+        "resource": "unused Unix import supplied on Windows",
+        "Pyfhel": "unused import-only placeholder in Plain mode",
+    }
+
+
+def scale_note(rounds: int, local_epochs: int) -> str:
+    if rounds == 10 and local_epochs == 10:
+        return (
+            "Full 60,000-sample MNIST training set using the README reference "
+            "schedule of 10 global rounds and 10 local epochs."
+        )
+    return (
+        "Full 60,000-sample MNIST training set, but reduced rounds/local epochs; "
+        "not a full README-schedule result."
+    )
+
+
 class Tee(io.TextIOBase):
     def __init__(self, console: io.TextIOBase, capture: io.StringIO) -> None:
         self.console = console
@@ -238,23 +259,13 @@ def main() -> int:
         "reference_source_modified": False,
         "mode": args.mode,
         "run_label": args.run_label,
-        "compatibility_shims": (
-            {
-                "resource": "unused Unix import supplied on Windows",
-                "Pyfhel": "unused import-only placeholder in Plain mode",
-            }
-            if args.mode == "Plain"
-            else {}
-        ),
+        "compatibility_shims": compatibility_shims(args.mode),
         "fidelity_note": (
             "Original main.py, client.py, server.py, LeNet, IID partitioning, "
             "local training and FedAvg execute unchanged. The wrapper injects a "
             "seed, arguments, compatible imports and result capture."
         ),
-        "scale_note": (
-            "Full 60,000-sample MNIST training set, but reduced rounds/local epochs; "
-            "not a paper-scale result."
-        ),
+        "scale_note": scale_note(args.rounds, args.local_epochs),
         "configuration": {
             "dataset": "MNIST",
             "model": "LeNetMnist",

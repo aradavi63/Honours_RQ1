@@ -39,7 +39,7 @@ from rq1_harness.training import (
 from scripts.run_e0_matrix import run_one
 from scripts.run_e2_matrix import result_filename as e2_result_filename
 from scripts.run_e4a_matrix import result_filename
-from scripts.run_reference_fedshe import Tee
+from scripts.run_reference_fedshe import Tee, compatibility_shims, scale_note
 
 
 class AggregationTests(unittest.TestCase):
@@ -57,6 +57,15 @@ class AggregationTests(unittest.TestCase):
             console_bytes.getvalue().decode("ascii"),
             r"train_time_epochs\uff1a [1, 2]",
         )
+
+    def test_reference_metadata_only_reports_windows_plain_shims(self):
+        self.assertEqual(compatibility_shims("Plain", "posix"), {})
+        self.assertEqual(compatibility_shims("CKKS", "nt"), {})
+        self.assertIn("resource", compatibility_shims("Plain", "nt"))
+
+    def test_reference_metadata_identifies_full_readme_schedule(self):
+        self.assertIn("README reference schedule", scale_note(10, 10))
+        self.assertIn("reduced", scale_note(3, 1))
 
     def test_e2_result_names_isolate_non_iid_runs(self):
         self.assertEqual(
