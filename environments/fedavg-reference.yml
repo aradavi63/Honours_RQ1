@@ -1,0 +1,14 @@
+name: rq1-fedavg-reference
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  - python=3.9
+  - pip<25
+  - numpy=1.23
+  - pip:
+      # CPU builds corresponding to the versions pinned by the reference repo.
+      - --extra-index-url https://download.pytorch.org/whl/cpu
+      - torch==1.12.1+cpu
+      - torchvision==0.13.1+cpu
+      - wandb==0.14.0

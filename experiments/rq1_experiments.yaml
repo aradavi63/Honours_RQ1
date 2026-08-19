@@ -249,6 +249,32 @@ experiments:
       mean_relative_l2_error: 0.07594989477251139
       max_relative_l2_error: 0.11742626039639656
       interpretation: FedSHE rounding perturbs individual outcomes slightly but preserves the finding that early model formation is substantially more vulnerable than late rounds.
+    non_iid_robustness:
+      status: completed_plaintext_multiseed
+      partitioning: dirichlet
+      dirichlet_alpha: 1.0
+      clients: 10
+      samples_per_client: 100
+      rounds: 5
+      seeds: [1, 2, 3, 4, 5]
+      attack_schedule: all_rounds
+      result_file_pattern: "results/e2/multiseed/dirichlet-alpha-1_plaintext_all_rounds_fraction-{0,0p1,0p2}_seed-{1..5}.csv"
+      partition_manifest_pattern: "results/partitions/mnist_dirichlet-alpha-1_clients-10_samples-100_seed-{1..5}.json"
+      clean_final_accuracy_mean: 0.73226
+      clean_final_accuracy_sample_sd: 0.048283
+      fraction_0p1_final_accuracy_mean: 0.73196
+      fraction_0p1_paired_accuracy_delta: -0.00030
+      fraction_0p1_excess_peak_asr_mean: 0.05779735682819383
+      fraction_0p1_excess_peak_asr_sample_sd: 0.12825603650010875
+      fraction_0p1_final_asr_paired_delta_mean: 0.00616740088105726
+      fraction_0p1_malicious_source_samples_by_seed: [2, 0, 1, 0, 19]
+      fraction_0p2_final_accuracy_mean: 0.71694
+      fraction_0p2_paired_accuracy_delta: -0.01532
+      fraction_0p2_excess_peak_asr_mean: 0.25162995594713655
+      fraction_0p2_excess_peak_asr_sample_sd: 0.24903126950605006
+      fraction_0p2_final_asr_paired_delta_mean: 0.0505726872246696
+      fraction_0p2_malicious_source_samples_by_seed: [6, 25, 11, 15, 29]
+      interpretation: Under non-IID partitions, malicious-client fraction is not a fixed poisoning dose because selected clients hold different numbers of source-label samples. Ten percent malicious clients often produced no meaningful attack, while twenty percent increased excess peak ASR but remained highly seed-sensitive. Effective source-label exposure must therefore accompany nominal malicious fraction.
     metrics: [test_accuracy, source_recall, targeted_attack_success_rate, unaffected_macro_recall]
   e3_gradient_inversion:
     status: baseline_multiseed_pilot_completed
@@ -290,11 +316,159 @@ experiments:
       interpretation: Direct individual gradients leaked recognizable sample information in this baseline, whereas larger plaintext aggregates increasingly obscured any one sample. CKKS ciphertext cannot be supplied to this plaintext gradient-matching objective without decryption.
     metrics: [mse, psnr, ssim, label_recovery, applicability]
   e4a_fedmia_update_based:
-    status: observation_adapter_pending
-    implementation: repos/FedMIA
+    status: fedmia_style_multiseed_pilot_completed
+    reference_implementation: repos/FedMIA
+    implementation: rq1_harness/membership.py
+    runner: scripts/run_e4a_matrix.py
     observations: [individual_plaintext, route_aggregate, ciphertext_only, colluding_clients]
+    attack_model: FedMIA-style multi-round target-minus-nontarget gradient-update cosine score.
+    interpretation_constraint: This adapts FedMIA's spatial and temporal cosine measurement to the shared MNIST harness; it is not a reproduction of the paper's full per-sample Gaussian likelihood-ratio selection pipeline.
+    pilot_configuration:
+      dataset: MNIST
+      clients: 5
+      samples_per_client: 100
+      attack_members: 50
+      attack_nonmembers: 50
+      rounds: 5
+      seeds: [1, 2, 3, 4, 5]
+    result_file_pattern: "results/e4a/multiseed/{individual_plaintext,route_aggregate,colluding_clients,ciphertext_only}_seed-{1..5}.csv"
+    completed_result_files: 20
+    individual_plaintext_summary:
+      mean_roc_auc: 0.61976
+      mean_tpr_at_fpr_01: 0.076
+      mean_tpr_at_fpr_001: 0.076
+      mean_membership_advantage: 0.256
+    route_aggregate_summary:
+      mean_roc_auc: 0.5452
+      mean_tpr_at_fpr_01: 0.008
+      mean_tpr_at_fpr_001: 0.008
+      mean_membership_advantage: 0.16
+    colluding_clients_summary:
+      mean_roc_auc: 0.61976
+      mean_tpr_at_fpr_01: 0.076
+      mean_tpr_at_fpr_001: 0.076
+      mean_membership_advantage: 0.256
+      numeric_equality_with_individual_plaintext: true
+    ciphertext_only_summary:
+      applicability: not_applicable_without_decryption_key
+    interpretation: Client-attributed updates leaked more membership information than the final-model E4b baseline. Aggregation weakened target attribution, but colluding clients that reveal every non-target update can recover the target update and restore the individual-update attack. Ciphertext prevents this plaintext cosine measurement while it remains encrypted.
+    nonmember_sampling_caveat: The original exploratory pilot sampled nonmembers randomly. Class-matched controls are the primary analysis because update similarity can otherwise distinguish a target client's label distribution rather than sample membership.
+    fedmia_gaussian_extension:
+      status: multiseed_pilot_completed
+      score: Per-round Gaussian CDF of the target-client cosine under the non-target-client out distribution, averaged across rounds.
+      applicable_observations: [individual_plaintext, colluding_clients]
+      limitation: Route aggregates and ciphertext-only observations do not expose the client-separated measurements required to estimate the out distribution.
+      result_file_pattern: "results/e4a/multiseed/gaussian_cdf_{individual_plaintext,colluding_clients}_seed-{1..5}.csv"
+      completed_result_files: 10
+      mean_roc_auc: 0.61328
+      sample_sd_roc_auc: 0.0320504602151046
+      mean_tpr_at_fpr_01: 0.028
+      mean_tpr_at_fpr_001: 0.028
+      mean_membership_advantage: 0.26
+      numeric_equality_colluding_and_individual: true
+      comparison_with_margin_score: The Gaussian CDF produced similar mean AUC but lower low-FPR TPR than the transparent target-minus-nontarget margin. With only four non-target clients, the fitted per-sample out distribution is based on very few observations.
+      interpretation_constraint: This implements the pinned FedMIA code's Gaussian out-CDF scoring stage but still omits its optional outlier or mean-percentage shadow-client selection variants.
+      ten_client_robustness:
+        status: completed
+        configuration:
+          clients: 10
+          non_target_clients: 9
+          samples_per_client: 100
+          attack_members: 50
+          attack_nonmembers: 50
+          rounds: 5
+          seeds: [1, 2, 3, 4, 5]
+        margin_result_file_pattern: "results/e4a/multiseed/clients-10_individual_plaintext_seed-{1..5}.csv"
+        gaussian_result_file_pattern: "results/e4a/multiseed/clients-10_gaussian_cdf_individual_plaintext_seed-{1..5}.csv"
+        margin_mean_roc_auc: 0.61504
+        margin_sample_sd_roc_auc: 0.0329879978173881
+        margin_mean_tpr_at_fpr_01: 0.048
+        margin_mean_membership_advantage: 0.252
+        gaussian_mean_roc_auc: 0.61944
+        gaussian_sample_sd_roc_auc: 0.0258280467709039
+        gaussian_mean_tpr_at_fpr_01: 0.028
+        gaussian_mean_membership_advantage: 0.28
+        interpretation: With nine rather than four non-target clients, Gaussian mean AUC increased slightly and across-seed variability decreased, but strict low-FPR performance did not improve. The result does not establish causality because increasing the client count also changes the global training trajectory.
+    class_matched_partition_robustness:
+      status: completed
+      configuration:
+        clients: 5
+        samples_per_client: 100
+        attack_members: 50
+        class_matched_nonmembers: 50
+        rounds: 5
+        seeds: [1, 2, 3, 4, 5]
+        dirichlet_alpha: 1.0
+      iid_margin_result_pattern: "results/e4a/multiseed/class-matched_individual_plaintext_seed-{1..5}.csv"
+      iid_gaussian_result_pattern: "results/e4a/multiseed/class-matched_gaussian_cdf_individual_plaintext_seed-{1..5}.csv"
+      dirichlet_margin_result_pattern: "results/e4a/multiseed/dirichlet-alpha-1_class-matched_individual_plaintext_seed-{1..5}.csv"
+      dirichlet_gaussian_result_pattern: "results/e4a/multiseed/dirichlet-alpha-1_class-matched_gaussian_cdf_individual_plaintext_seed-{1..5}.csv"
+      iid_margin_mean_roc_auc: 0.56928
+      iid_margin_sample_sd_roc_auc: 0.0268050741465119
+      iid_margin_mean_tpr_at_fpr_01: 0.064
+      iid_margin_mean_membership_advantage: 0.18
+      iid_gaussian_mean_roc_auc: 0.57296
+      iid_gaussian_sample_sd_roc_auc: 0.0277425305262516
+      iid_gaussian_mean_tpr_at_fpr_01: 0.036
+      iid_gaussian_mean_membership_advantage: 0.192
+      dirichlet_margin_mean_roc_auc: 0.53968
+      dirichlet_margin_sample_sd_roc_auc: 0.0281657948583029
+      dirichlet_margin_mean_tpr_at_fpr_01: 0.016
+      dirichlet_margin_mean_membership_advantage: 0.144
+      dirichlet_gaussian_mean_roc_auc: 0.53672
+      dirichlet_gaussian_sample_sd_roc_auc: 0.0103899951876794
+      dirichlet_gaussian_mean_tpr_at_fpr_01: 0.04
+      dirichlet_gaussian_mean_membership_advantage: 0.132
+      interpretation: Once nonmembers have exactly the target-member label histogram, Dirichlet heterogeneity moves both update attacks closer to chance. Unmatched nonmembers produced spuriously high AUC because the score exposed client class composition as well as membership.
     metrics: [roc_auc, tpr_at_fpr_01, tpr_at_fpr_001, membership_advantage, applicability]
   e4b_blackbox_membership:
-    status: model_adapter_pending
+    status: multiseed_pilot_completed_all_main_mechanisms
+    implementation: rq1_harness/membership.py
+    runner: scripts/run_e4b_matrix.py
     observations: [global_model]
-    metrics: [loss_auc, confidence_auc, tpr_at_fpr_01, tpr_at_fpr_001]
+    attack_model: Equal-sized member and held-out nonmember sets scored by negative cross-entropy loss and true-class confidence.
+    pilot_configuration:
+      dataset: MNIST
+      clients: 5
+      samples_per_client: 100
+      rounds: 5
+      local_epochs: 1
+      seeds: [1, 2, 3, 4, 5]
+    plaintext_result_file_pattern: "results/e4b/multiseed/plaintext_seed-{1..5}.csv"
+    lee_result_file_pattern: "results/e4b/multiseed/lee_ckks_seed-{1..5}.csv"
+    fedshe_result_file_pattern: "results/e4b/multiseed/fedshe_ckks_seed-{1..5}.csv"
+    plaintext_summary:
+      mean_roc_auc: 0.52938
+      sample_sd_roc_auc: 0.0175220841226151
+      mean_tpr_at_fpr_01: 0.012
+      mean_tpr_at_fpr_001: 0.0036
+      mean_membership_advantage: 0.0808
+      score_equivalence: Negative cross-entropy is the logarithm of true-class confidence, so both scores have identical ROC rankings and metrics.
+      interpretation: This short five-round global-model baseline shows only weak sample-membership leakage; it does not test FedMIA's stronger multi-client, multi-round update observations.
+    lee_ckks_summary:
+      mean_roc_auc: 0.52938
+      mean_tpr_at_fpr_01: 0.012
+      mean_tpr_at_fpr_001: 0.0036
+      mean_membership_advantage: 0.0808
+      paired_metric_difference_from_plaintext: 0.0
+      mean_total_key_generation_seconds: 2.3466849
+      mean_total_encryption_seconds: 2.89199508000001
+      mean_total_aggregation_seconds: 0.0554564000000088
+      mean_total_decryption_seconds: 0.149513960000003
+      mean_total_ciphertext_bytes: 58498344.4
+      interpretation: Lee CKKS preserved every score ranking and membership metric exactly in this pilot.
+    fedshe_ckks_summary:
+      mean_roc_auc: 0.5295048
+      paired_mean_roc_auc_difference_from_plaintext: 0.000124799999999947
+      maximum_absolute_paired_roc_auc_difference: 0.000255999999999812
+      mean_tpr_at_fpr_01: 0.012
+      mean_tpr_at_fpr_001: 0.0032
+      mean_membership_advantage: 0.0808
+      mean_total_key_generation_seconds: 0.0970975236000072
+      mean_total_encryption_seconds: 1.30807953999985
+      mean_total_aggregation_seconds: 0.0141552723999666
+      mean_total_decryption_seconds: 0.0972211011999661
+      mean_total_ciphertext_bytes: 39338550
+      interpretation: FedSHE three-decimal rounding changed a few score rankings but did not materially change weak black-box membership leakage.
+    cross_mechanism_interpretation: Aggregation encryption protects updates in transit but does not hide the final global model from a black-box attacker; membership leakage therefore remained essentially unchanged when utility was preserved.
+    metrics: [roc_auc, tpr_at_fpr_01, tpr_at_fpr_001, membership_advantage]

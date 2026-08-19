@@ -23,7 +23,9 @@ from rq1_harness.poisoning import (
 )
 from rq1_harness.training import (
     SmallMnistCNN,
+    dataset_labels,
     evaluate,
+    load_or_create_dirichlet_partitions,
     load_or_create_iid_partitions,
     numpy_to_state,
     predict,
@@ -58,25 +60,43 @@ def main() -> int:
     parser.add_argument("--fedshe-round-decimals", type=int, default=3)
     parser.add_argument("--data-root", type=Path, default=ROOT / "data")
     parser.add_argument("--partition-manifest", type=Path)
+    parser.add_argument("--partitioning", choices=("iid", "dirichlet"), default="iid")
+    parser.add_argument("--dirichlet-alpha", type=float, default=1.0)
     parser.add_argument("--output", type=Path)
     args = parser.parse_args()
     if min(args.clients, args.samples_per_client, args.rounds, args.local_epochs, args.batch_size) < 1:
         parser.error("client, sample, round, epoch and batch values must be positive")
     if args.source_label == args.target_label:
         parser.error("source and target labels must differ")
+    if args.dirichlet_alpha <= 0:
+        parser.error("Dirichlet alpha must be positive")
 
     seed_everything(args.seed)
     device = torch.device("cpu")
     train_data, test_data = load_data(args.dataset, args.data_root, args.seed)
-    manifest = (args.partition_manifest or ROOT / "results" / "partitions" / (
-        f"{args.dataset}_iid_clients-{args.clients}_samples-{args.samples_per_client}_seed-{args.seed}.json"
-    )).resolve()
-    partitions = load_or_create_iid_partitions(
-        manifest, args.dataset, len(train_data), args.clients,
-        args.samples_per_client, args.seed,
+    partition_label = "iid" if args.partitioning == "iid" else (
+        f"dirichlet-alpha-{args.dirichlet_alpha:g}"
     )
+    manifest = (args.partition_manifest or ROOT / "results" / "partitions" / (
+        f"{args.dataset}_{partition_label}_clients-{args.clients}_samples-{args.samples_per_client}_seed-{args.seed}.json"
+    )).resolve()
+    if args.partitioning == "iid":
+        partitions = load_or_create_iid_partitions(
+            manifest, args.dataset, len(train_data), args.clients,
+            args.samples_per_client, args.seed,
+        )
+    else:
+        partitions = load_or_create_dirichlet_partitions(
+            manifest, args.dataset, dataset_labels(train_data), args.clients,
+            args.samples_per_client, args.dirichlet_alpha, args.seed,
+        )
     malicious_ids = select_malicious_clients(args.clients, args.malicious_fraction, args.seed)
     malicious_set = set(malicious_ids)
+    train_labels = dataset_labels(train_data)
+    malicious_source_samples = sum(
+        int((train_labels[partitions[client_id]] == args.source_label).sum())
+        for client_id in malicious_ids
+    )
     model = SmallMnistCNN().to(device)
     rows = []
 
@@ -132,10 +152,15 @@ def main() -> int:
             "clients": args.clients,
             "samples_per_client": args.samples_per_client,
             "partition_manifest": str(manifest.relative_to(ROOT)),
+            "partitioning": args.partitioning,
+            "dirichlet_alpha": (
+                args.dirichlet_alpha if args.partitioning == "dirichlet" else None
+            ),
             "source_label": args.source_label,
             "target_label": args.target_label,
             "malicious_fraction": args.malicious_fraction,
             "malicious_client_ids": ";".join(map(str, malicious_ids)),
+            "malicious_source_samples": malicious_source_samples,
             "attack_schedule": args.attack_schedule,
             "attack_active": active,
             "mean_client_loss": sum(losses) / len(losses),

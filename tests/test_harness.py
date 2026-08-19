@@ -11,6 +11,11 @@ from rq1_harness.fedshe import (
     load_fedshe_ckks_parameters,
 )
 from rq1_harness.metrics import aggregation_error, targeted_attack_success_rate
+from rq1_harness.membership import (
+    gaussian_out_cdf_scores,
+    membership_metrics,
+    spatial_temporal_scores,
+)
 from rq1_harness.inversion import (
     average_gradients,
     ciphertext_only_result,
@@ -24,11 +29,72 @@ from rq1_harness.poisoning import (
     flip_source_labels,
     select_malicious_clients,
 )
-from rq1_harness.training import iid_partitions, load_or_create_iid_partitions
+from rq1_harness.training import (
+    class_matched_indices,
+    dirichlet_partitions,
+    iid_partitions,
+    load_or_create_iid_partitions,
+)
 from scripts.run_e0_matrix import run_one
+from scripts.run_e2_matrix import result_filename as e2_result_filename
+from scripts.run_e4a_matrix import result_filename
 
 
 class AggregationTests(unittest.TestCase):
+    def test_e2_result_names_isolate_non_iid_runs(self):
+        self.assertEqual(
+            e2_result_filename("plaintext", "all_rounds", 0.2, 1),
+            "plaintext_all_rounds_fraction-0p2_seed-1.csv",
+        )
+        self.assertEqual(
+            e2_result_filename(
+                "plaintext", "all_rounds", 0.2, 1, "dirichlet", 1.0,
+            ),
+            "dirichlet-alpha-1_plaintext_all_rounds_fraction-0p2_seed-1.csv",
+        )
+
+    def test_e4a_result_names_separate_client_counts_and_score_methods(self):
+        self.assertEqual(
+            result_filename("margin", "individual_plaintext", 1, 5),
+            "individual_plaintext_seed-1.csv",
+        )
+        self.assertEqual(
+            result_filename("gaussian_cdf", "individual_plaintext", 1, 10),
+            "clients-10_gaussian_cdf_individual_plaintext_seed-1.csv",
+        )
+        self.assertEqual(
+            result_filename("margin", "individual_plaintext", 1, 5, "dirichlet", 1.0),
+            "dirichlet-alpha-1_individual_plaintext_seed-1.csv",
+        )
+        self.assertEqual(
+            result_filename(
+                "margin", "individual_plaintext", 1, 5, "dirichlet", 1.0,
+                "class_matched",
+            ),
+            "dirichlet-alpha-1_class-matched_individual_plaintext_seed-1.csv",
+        )
+
+    def test_dirichlet_partitions_are_reproducible_disjoint_and_balanced(self):
+        labels = np.repeat(np.arange(4), 50)
+        first = dirichlet_partitions(labels, 5, 20, alpha=0.5, seed=3)
+        second = dirichlet_partitions(labels, 5, 20, alpha=0.5, seed=3)
+        self.assertEqual(first, second)
+        self.assertTrue(all(len(client) == 20 for client in first))
+        flattened = [index for client in first for index in client]
+        self.assertEqual(len(flattened), len(set(flattened)))
+        histograms = [tuple(np.bincount(labels[client], minlength=4)) for client in first]
+        self.assertGreater(len(set(histograms)), 1)
+
+    def test_class_matched_indices_reproduce_reference_histogram(self):
+        reference = np.array([0, 0, 1, 3, 3, 3])
+        candidates = np.repeat(np.arange(4), 10)
+        selected = class_matched_indices(reference, candidates, seed=4)
+        np.testing.assert_array_equal(
+            np.bincount(candidates[selected], minlength=4),
+            np.bincount(reference, minlength=4),
+        )
+        self.assertEqual(len(selected), len(set(selected)))
+
     def test_weighted_average(self):
         updates = [{"x": np.array([1.0, 3.0])}, {"x": np.array([3.0, 7.0])}]
         result = weighted_fedavg(updates, [1, 3])
@@ -152,6 +218,48 @@ class AggregationTests(unittest.TestCase):
         result = ciphertext_only_result()
         self.assertEqual(result["applicability"], "not_applicable")
         self.assertTrue(np.isnan(result["mse"]))
+
+    def test_membership_metrics_identify_perfect_separation(self):
+        values = membership_metrics([0.9, 0.8, 0.7], [0.3, 0.2, 0.1])
+        self.assertEqual(values["roc_auc"], 1.0)
+        self.assertEqual(values["tpr_at_fpr_01"], 1.0)
+        self.assertEqual(values["tpr_at_fpr_001"], 1.0)
+        self.assertEqual(values["membership_advantage"], 1.0)
+
+    def test_membership_metrics_reject_empty_scores(self):
+        with self.assertRaises(ValueError):
+            membership_metrics([], [0.1])
+
+    def test_spatial_temporal_score_uses_target_minus_other_clients(self):
+        rounds = [
+            np.array([[0.8, 0.2, 0.4], [0.3, 0.1, 0.1]]),
+            np.array([[0.6, 0.2, 0.2], [0.5, 0.3, 0.3]]),
+        ]
+        np.testing.assert_allclose(
+            spatial_temporal_scores(rounds, "individual_plaintext"), [0.45, 0.2]
+        )
+        np.testing.assert_allclose(
+            spatial_temporal_scores(rounds, "colluding_clients"), [0.45, 0.2]
+        )
+
+    def test_route_aggregate_score_averages_rounds(self):
+        rounds = [np.array([[0.2], [0.8]]), np.array([[0.6], [0.4]])]
+        np.testing.assert_allclose(
+            spatial_temporal_scores(rounds, "route_aggregate"), [0.4, 0.6]
+        )
+
+    def test_gaussian_out_cdf_scores_target_against_other_clients(self):
+        rounds = [
+            np.array([[0.0, -1.0, 1.0], [2.0, 0.0, 0.0]]),
+            np.array([[0.0, -1.0, 1.0], [2.0, 0.0, 0.0]]),
+        ]
+        scores = gaussian_out_cdf_scores(rounds)
+        self.assertAlmostEqual(scores[0], 0.5)
+        self.assertGreater(scores[1], 0.999)
+
+    def test_gaussian_out_cdf_requires_two_shadow_clients(self):
+        with self.assertRaises(ValueError):
+            gaussian_out_cdf_scores([np.array([[0.5, 0.2]])])
 
 
 if __name__ == "__main__":

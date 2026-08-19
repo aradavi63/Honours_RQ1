@@ -14,6 +14,19 @@ def fraction_name(value: float) -> str:
     return f"{value:g}".replace(".", "p")
 
 
+def result_filename(
+    backend: str, schedule: str, fraction: float, seed: int,
+    partitioning: str = "iid", dirichlet_alpha: float = 1.0,
+) -> str:
+    partition_prefix = "" if partitioning == "iid" else (
+        f"dirichlet-alpha-{dirichlet_alpha:g}_"
+    )
+    return (
+        f"{partition_prefix}{backend}_{schedule}_"
+        f"fraction-{fraction_name(fraction)}_seed-{seed}.csv"
+    )
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description="Run the deterministic E2 attack matrix")
     parser.add_argument("--backend", choices=BACKENDS, required=True)
@@ -25,6 +38,8 @@ def main() -> int:
     parser.add_argument("--attack-schedules", nargs="+", choices=SCHEDULES, default=("all_rounds",))
     parser.add_argument("--source-label", type=int, default=1)
     parser.add_argument("--target-label", type=int, default=7)
+    parser.add_argument("--partitioning", choices=("iid", "dirichlet"), default="iid")
+    parser.add_argument("--dirichlet-alpha", type=float, default=1.0)
     parser.add_argument("--fedshe-security-level", default="128")
     parser.add_argument("--fedshe-multiplication-depth", default="0")
     parser.add_argument("--fedshe-polynomial-degree", default="16384")
@@ -37,8 +52,9 @@ def main() -> int:
     for schedule in args.attack_schedules:
         for fraction in args.malicious_fractions:
             for seed in args.seeds:
-                output = output_dir / (
-                    f"{args.backend}_{schedule}_fraction-{fraction_name(fraction)}_seed-{seed}.csv"
+                output = output_dir / result_filename(
+                    args.backend, schedule, fraction, seed,
+                    args.partitioning, args.dirichlet_alpha,
                 )
                 if output.exists() and not args.overwrite:
                     parser.error(f"result already exists: {output.relative_to(ROOT)}")
@@ -54,6 +70,8 @@ def main() -> int:
                     "--target-label", str(args.target_label),
                     "--malicious-fraction", str(fraction),
                     "--attack-schedule", schedule,
+                    "--partitioning", args.partitioning,
+                    "--dirichlet-alpha", str(args.dirichlet_alpha),
                     "--output", str(output),
                     "--fedshe-security-level", args.fedshe_security_level,
                     "--fedshe-multiplication-depth", args.fedshe_multiplication_depth,
@@ -62,7 +80,8 @@ def main() -> int:
                 ]
                 print(
                     f"Running {args.backend} schedule={schedule} "
-                    f"fraction={fraction:g} seed={seed}", flush=True
+                    f"fraction={fraction:g} seed={seed} partitioning={args.partitioning}",
+                    flush=True,
                 )
                 subprocess.run(command, cwd=ROOT, check=True)
     return 0

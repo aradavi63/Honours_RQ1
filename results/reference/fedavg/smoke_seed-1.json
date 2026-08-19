@@ -1,0 +1,34 @@
+{
+  "status": "reference_smoke_completed",
+  "reference_repo": "repos/FedAvg",
+  "reference_commit": "27a0f50efb87c26465dd089a1ddd8ce2c06a9fa1",
+  "reference_entrypoint": "fed_avg.py",
+  "reference_source_modified": false,
+  "scale_note": "Reduced smoke configuration; not a paper-scale reproduction.",
+  "seed_injected_by_wrapper": 1,
+  "configuration": {
+    "dataset": "MNIST",
+    "model": "reference CNN",
+    "non_iid": true,
+    "clients": 10,
+    "shards": 20,
+    "client_fraction": 0.2,
+    "rounds": 1,
+    "local_epochs": 1,
+    "learning_rate": 0.01,
+    "momentum": 0.9
+  },
+  "result": {
+    "final_test_loss": 42.793848331157974,
+    "final_test_accuracy": 0.101
+  },
+  "environment": {
+    "python_executable": "C:\\Users\\Adam\\anaconda3\\envs\\rq1-fedavg-reference\\python.exe",
+    "python_version": "3.9.23",
+    "torch_version": "1.12.1+cpu",
+    "torchvision_version": "0.13.1+cpu",
+    "platform": "Windows-10-10.0.22631-SP0",
+    "wandb_mode": "disabled"
+  },
+  "native_stdout": "Client #2 | Epoch: 0/1 | Loss: 1.7926708345408349 | Acc: 0.9666666666666667\rClient #4 | Epoch: 0/1 | Loss: 1.8174343382305527 | Acc: 0.796\r\n\nResults after 1 rounds of training:\n---> Avg Training Loss: 1.8050525863856937\n---> Avg Test Loss: 42.793848331157974 | Avg Test Accuracy: 0.101\n\n"
+}
